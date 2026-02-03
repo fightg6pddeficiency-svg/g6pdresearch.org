@@ -217,6 +217,33 @@ nav.dark .nav-links a::after {
     align-items: center;
 }
 
+.nav-dropdown > a,
+.nav-dropdown > .dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    color: var(--text-light);
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 8px 0;
+}
+
+nav.dark .nav-dropdown > a,
+nav.dark .nav-dropdown > .dropdown-toggle {
+    color: rgba(255,255,255,0.8);
+}
+
+.nav-dropdown > a:hover,
+.nav-dropdown > .dropdown-toggle:hover {
+    color: var(--primary);
+}
+
+nav.dark .nav-dropdown > a:hover,
+nav.dark .nav-dropdown > .dropdown-toggle:hover {
+    color: var(--secondary);
+}
+
 .dropdown-toggle {
     display: flex;
     align-items: center;

@@ -660,13 +660,15 @@
                         if (variant === 'wild') {
                             viewer.setStyle({}, {cartoon: {color: 'spectrum', opacity: 0.9}});
                         } else if (variant === 'mediterranean') {
-                            viewer.setStyle({}, {cartoon: {color: 'ssJmol', opacity: 0.9}});
-                            // Highlight mutation site in red
-                            viewer.addStyle({resi: 188}, {cartoon: {color: 'red'}});
+                            // Use bright orange/gold base color
+                            viewer.setStyle({}, {cartoon: {color: 'orange', opacity: 0.9}});
+                            // Highlight mutation site S188F in bright red
+                            viewer.addStyle({resi: 188}, {cartoon: {color: 'red'}, stick: {color: 'red', radius: 0.3}});
                         } else if (variant === 'african') {
-                            viewer.setStyle({}, {cartoon: {color: 'chain', opacity: 0.9}});
-                            // Highlight mutation sites
-                            viewer.addStyle({resi: [68, 126]}, {cartoon: {color: 'yellow'}});
+                            // Use bright cyan/teal base color
+                            viewer.setStyle({}, {cartoon: {color: 'cyan', opacity: 0.9}});
+                            // Highlight mutation sites V68M and N126D in yellow
+                            viewer.addStyle({resi: [68, 126]}, {cartoon: {color: 'yellow'}, stick: {color: 'yellow', radius: 0.3}});
                         }
                         viewer.render();
                     });
