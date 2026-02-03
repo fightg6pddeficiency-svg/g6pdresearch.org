@@ -244,6 +244,12 @@ nav.dark .nav-dropdown > .dropdown-toggle:hover {
     color: var(--secondary);
 }
 
+/* Remove underline from dropdown toggle */
+.nav-dropdown > a::after,
+.nav-dropdown > .dropdown-toggle::after {
+    display: none !important;
+}
+
 .dropdown-toggle {
     display: flex;
     align-items: center;

@@ -716,6 +716,9 @@
 
             currentStyle = style;
 
+            // IMPORTANT: Remove any existing surfaces before applying new style
+            viewer.removeAllSurfaces();
+
             if (style === 'cartoon') {
                 viewer.setStyle({}, {cartoon: {color: 'spectrum'}});
             } else if (style === 'stick') {
@@ -735,6 +738,9 @@
             document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
             event.target.closest('.view-btn').classList.add('active');
 
+            // Remove any existing surfaces
+            viewer.removeAllSurfaces();
+
             viewer.setStyle({}, {cartoon: {color: 'white', opacity: 0.5}});
             // Highlight active site residues in green
             viewer.addStyle({resi: [171, 198, 201, 258, 263]}, {cartoon: {color: 'lime'}, stick: {color: 'lime'}});
@@ -746,6 +752,9 @@
 
             document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
             event.target.closest('.view-btn').classList.add('active');
+
+            // Remove any existing surfaces
+            viewer.removeAllSurfaces();
 
             viewer.setStyle({}, {cartoon: {color: 'spectrum', opacity: 0.7}});
             // Highlight common mutation sites in red/orange
