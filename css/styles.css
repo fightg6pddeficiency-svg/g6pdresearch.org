@@ -244,10 +244,15 @@ nav.dark .nav-dropdown > .dropdown-toggle:hover {
     color: var(--secondary);
 }
 
-/* Remove underline from dropdown toggle */
-.nav-dropdown > a::after,
-.nav-dropdown > .dropdown-toggle::after {
+/* Remove underline from dropdown toggle - must be more specific than .nav-links a::after */
+.nav-links .nav-dropdown > a::after,
+.nav-links .nav-dropdown > a:hover::after,
+.nav-links .nav-dropdown > a.active::after,
+.nav-links .nav-dropdown > .dropdown-toggle::after,
+.nav-links .nav-dropdown > .dropdown-toggle:hover::after {
     display: none !important;
+    width: 0 !important;
+    content: none !important;
 }
 
 .dropdown-toggle {
