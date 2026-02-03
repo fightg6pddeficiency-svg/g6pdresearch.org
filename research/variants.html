@@ -17,6 +17,10 @@
     <!-- Shared Styles -->
     <link rel="stylesheet" href="../css/styles.css">
 
+    <!-- Leaflet CSS for Interactive Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <style>
         .variants-hero {
             background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 50%, #4c1d95 100%);
@@ -642,19 +646,30 @@
             </p>
 
             <div class="world-map-container fade-in" style="margin-top: 2rem;">
-                <div class="map-placeholder">
-                    <!-- Simplified world map with dots -->
-                    <div class="map-dot" style="top: 45%; left: 48%;" title="Mediterranean"></div>
-                    <div class="map-dot" style="top: 50%; left: 55%;" title="Middle East"></div>
-                    <div class="map-dot" style="top: 60%; left: 50%;" title="Sub-Saharan Africa"></div>
-                    <div class="map-dot" style="top: 45%; left: 70%;" title="India"></div>
-                    <div class="map-dot" style="top: 50%; left: 78%;" title="Southeast Asia"></div>
-                    <div class="map-dot" style="top: 40%; left: 82%;" title="China"></div>
-                    <div class="map-dot" style="top: 65%; left: 88%;" title="Pacific Islands"></div>
+                <!-- Interactive Leaflet Map -->
+                <div id="g6pd-map" style="width: 100%; height: 450px; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);"></div>
 
-                    <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); text-align: center;">
-                        <i data-lucide="globe" style="width: 48px; height: 48px; color: var(--primary); margin-bottom: 0.5rem;"></i>
-                        <p style="color: var(--text-light);">Interactive map coming soon</p>
+                <!-- Map Legend -->
+                <div style="display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <div style="width: 20px; height: 20px; background: #800026; border-radius: 4px;"></div>
+                        <span style="font-size: 0.85rem; color: var(--text-light);">&gt;20%</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <div style="width: 20px; height: 20px; background: #E31A1C; border-radius: 4px;"></div>
+                        <span style="font-size: 0.85rem; color: var(--text-light);">10-20%</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <div style="width: 20px; height: 20px; background: #FC4E2A; border-radius: 4px;"></div>
+                        <span style="font-size: 0.85rem; color: var(--text-light);">5-10%</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <div style="width: 20px; height: 20px; background: #FEB24C; border-radius: 4px;"></div>
+                        <span style="font-size: 0.85rem; color: var(--text-light);">1-5%</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <div style="width: 20px; height: 20px; background: #FFEDA0; border-radius: 4px;"></div>
+                        <span style="font-size: 0.85rem; color: var(--text-light);">&lt;1%</span>
                     </div>
                 </div>
 
@@ -833,6 +848,157 @@
             animateValue('class1Count', 0, 54, 1500);
             animateValue('class2Count', 0, 89, 1500);
         }, 500);
+
+        // ========================================
+        // Interactive G6PD Prevalence Map
+        // ========================================
+
+        // Initialize the map centered on Africa/Middle East
+        const map = L.map('g6pd-map', {
+            center: [20, 40],
+            zoom: 2,
+            minZoom: 1,
+            maxZoom: 6,
+            scrollWheelZoom: true
+        });
+
+        // Add OpenStreetMap tiles with a clean style
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+
+        // G6PD prevalence data by region (approximate percentages)
+        const g6pdData = [
+            // Sub-Saharan Africa - Highest prevalence
+            { name: "Nigeria", coords: [9.0820, 8.6753], prevalence: 25, variants: "G6PD A-, A" },
+            { name: "Democratic Republic of Congo", coords: [-4.0383, 21.7587], prevalence: 23, variants: "G6PD A-" },
+            { name: "Tanzania", coords: [-6.3690, 34.8888], prevalence: 20, variants: "G6PD A-" },
+            { name: "Kenya", coords: [-0.0236, 37.9062], prevalence: 19, variants: "G6PD A-" },
+            { name: "Senegal", coords: [14.4974, -14.4524], prevalence: 22, variants: "G6PD A-" },
+            { name: "Ghana", coords: [7.9465, -1.0232], prevalence: 24, variants: "G6PD A-" },
+            { name: "Cameroon", coords: [7.3697, 12.3547], prevalence: 21, variants: "G6PD A-" },
+            { name: "Mali", coords: [17.5707, -3.9962], prevalence: 20, variants: "G6PD A-" },
+            { name: "Burkina Faso", coords: [12.2383, -1.5616], prevalence: 18, variants: "G6PD A-" },
+            { name: "Uganda", coords: [1.3733, 32.2903], prevalence: 17, variants: "G6PD A-" },
+
+            // Mediterranean Region
+            { name: "Sardinia, Italy", coords: [40.1209, 9.0129], prevalence: 15, variants: "G6PD Mediterranean" },
+            { name: "Greece", coords: [39.0742, 21.8243], prevalence: 8, variants: "G6PD Mediterranean" },
+            { name: "Cyprus", coords: [35.1264, 33.4299], prevalence: 10, variants: "G6PD Mediterranean" },
+            { name: "Southern Italy", coords: [40.4637, 17.2479], prevalence: 5, variants: "G6PD Mediterranean" },
+            { name: "Spain (Catalonia)", coords: [41.5912, 1.5209], prevalence: 3, variants: "G6PD Mediterranean" },
+
+            // Middle East
+            { name: "Saudi Arabia", coords: [23.8859, 45.0792], prevalence: 13, variants: "G6PD Mediterranean, Aures" },
+            { name: "Iraq", coords: [33.2232, 43.6793], prevalence: 12, variants: "G6PD Mediterranean" },
+            { name: "Iran", coords: [32.4279, 53.6880], prevalence: 11, variants: "G6PD Mediterranean, Chatham" },
+            { name: "Yemen", coords: [15.5527, 48.5164], prevalence: 10, variants: "G6PD Mediterranean" },
+            { name: "Jordan", coords: [30.5852, 36.2384], prevalence: 8, variants: "G6PD Mediterranean" },
+            { name: "Lebanon", coords: [33.8547, 35.8623], prevalence: 5, variants: "G6PD Mediterranean" },
+            { name: "Israel", coords: [31.0461, 34.8516], prevalence: 4, variants: "G6PD Mediterranean" },
+            { name: "Turkey", coords: [38.9637, 35.2433], prevalence: 4, variants: "G6PD Mediterranean" },
+
+            // South Asia
+            { name: "India (Overall)", coords: [20.5937, 78.9629], prevalence: 8, variants: "G6PD Mediterranean, Kerala-Kalyan, Orissa" },
+            { name: "India (Gujarat)", coords: [22.2587, 71.1924], prevalence: 15, variants: "G6PD Mediterranean" },
+            { name: "India (Odisha)", coords: [20.9517, 85.0985], prevalence: 12, variants: "G6PD Orissa" },
+            { name: "Pakistan", coords: [30.3753, 69.3451], prevalence: 6, variants: "G6PD Mediterranean" },
+            { name: "Bangladesh", coords: [23.6850, 90.3563], prevalence: 5, variants: "G6PD Mahidol" },
+            { name: "Sri Lanka", coords: [7.8731, 80.7718], prevalence: 4, variants: "G6PD Mediterranean" },
+
+            // Southeast Asia
+            { name: "Myanmar", coords: [21.9162, 95.9560], prevalence: 14, variants: "G6PD Mahidol" },
+            { name: "Thailand", coords: [15.8700, 100.9925], prevalence: 12, variants: "G6PD Mahidol, Viangchan" },
+            { name: "Cambodia", coords: [12.5657, 104.9910], prevalence: 14, variants: "G6PD Viangchan" },
+            { name: "Laos", coords: [19.8563, 102.4955], prevalence: 13, variants: "G6PD Viangchan, Mahidol" },
+            { name: "Vietnam", coords: [14.0583, 108.2772], prevalence: 11, variants: "G6PD Viangchan" },
+            { name: "Malaysia", coords: [4.2105, 101.9758], prevalence: 8, variants: "G6PD Mahidol" },
+            { name: "Indonesia", coords: [-0.7893, 113.9213], prevalence: 7, variants: "G6PD Vanua Lava" },
+            { name: "Philippines", coords: [12.8797, 121.7740], prevalence: 6, variants: "G6PD Vanua Lava" },
+
+            // East Asia
+            { name: "Southern China", coords: [23.1291, 113.2644], prevalence: 6, variants: "G6PD Canton, Kaiping" },
+            { name: "Taiwan", coords: [23.6978, 120.9605], prevalence: 3, variants: "G6PD Kaiping" },
+            { name: "Hong Kong", coords: [22.3193, 114.1694], prevalence: 4, variants: "G6PD Canton" },
+
+            // Pacific Islands
+            { name: "Papua New Guinea", coords: [-6.3150, 143.9555], prevalence: 15, variants: "G6PD Union" },
+            { name: "Solomon Islands", coords: [-9.4280, 160.0195], prevalence: 12, variants: "G6PD Union" },
+            { name: "Vanuatu", coords: [-15.3767, 166.9592], prevalence: 10, variants: "G6PD Vanua Lava" },
+
+            // Americas
+            { name: "Brazil (Bahia)", coords: [-12.9714, -38.5014], prevalence: 7, variants: "G6PD A-" },
+            { name: "Cuba", coords: [21.5218, -77.7812], prevalence: 5, variants: "G6PD A-" },
+            { name: "United States (African Americans)", coords: [33.7490, -84.3880], prevalence: 10, variants: "G6PD A-" }
+        ];
+
+        // Color scale function based on prevalence
+        function getColor(prevalence) {
+            return prevalence > 20 ? '#800026' :
+                   prevalence > 10 ? '#E31A1C' :
+                   prevalence > 5  ? '#FC4E2A' :
+                   prevalence > 1  ? '#FEB24C' :
+                                     '#FFEDA0';
+        }
+
+        // Add markers for each region
+        g6pdData.forEach(region => {
+            const color = getColor(region.prevalence);
+
+            // Create a circle marker
+            const marker = L.circleMarker(region.coords, {
+                radius: Math.max(8, region.prevalence * 0.8),
+                fillColor: color,
+                color: '#fff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map);
+
+            // Create popup content
+            const popupContent = `
+                <div style="min-width: 200px; font-family: 'Inter', sans-serif;">
+                    <h4 style="margin: 0 0 8px; color: #1F2937; font-size: 1rem;">${region.name}</h4>
+                    <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                        <div style="width: 16px; height: 16px; background: ${color}; border-radius: 4px; margin-right: 8px;"></div>
+                        <span style="font-size: 1.25rem; font-weight: 700; color: ${color};">${region.prevalence}%</span>
+                        <span style="margin-left: 4px; color: #6B7280; font-size: 0.85rem;">prevalence</span>
+                    </div>
+                    <div style="background: #F3F4F6; padding: 8px; border-radius: 6px; margin-top: 8px;">
+                        <span style="font-size: 0.75rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Common Variants</span>
+                        <p style="margin: 4px 0 0; font-size: 0.85rem; color: #374151; font-weight: 500;">${region.variants}</p>
+                    </div>
+                </div>
+            `;
+
+            marker.bindPopup(popupContent);
+
+            // Hover effect
+            marker.on('mouseover', function() {
+                this.setStyle({ fillOpacity: 1, weight: 3 });
+                this.openPopup();
+            });
+
+            marker.on('mouseout', function() {
+                this.setStyle({ fillOpacity: 0.8, weight: 2 });
+            });
+        });
+
+        // Add a title overlay
+        const info = L.control({ position: 'topright' });
+        info.onAdd = function() {
+            const div = L.DomUtil.create('div', 'info');
+            div.innerHTML = `
+                <div style="background: white; padding: 12px 16px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h4 style="margin: 0 0 4px; font-size: 0.9rem; color: #1F2937;">G6PD Deficiency Prevalence</h4>
+                    <p style="margin: 0; font-size: 0.75rem; color: #6B7280;">Click markers for details</p>
+                </div>
+            `;
+            return div;
+        };
+        info.addTo(map);
     </script>
 </body>
 </html>
