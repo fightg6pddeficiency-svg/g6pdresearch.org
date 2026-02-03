@@ -24,7 +24,7 @@
     <style>
         .variants-hero {
             background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 50%, #4c1d95 100%);
-            padding: 120px 1rem 60px;
+            padding: 100px 1rem 30px;
             color: white;
             position: relative;
             overflow: hidden;
@@ -32,8 +32,49 @@
 
         @media (min-width: 768px) {
             .variants-hero {
-                padding: 150px 2rem 80px;
+                padding: 120px 2rem 40px;
             }
+        }
+
+        /* Compact sections */
+        .section-compact {
+            padding: 2rem 1rem;
+        }
+        @media (min-width: 768px) {
+            .section-compact {
+                padding: 3rem 2rem;
+            }
+        }
+
+        /* Hero stats - fixed numbers at top */
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        @media (min-width: 768px) {
+            .hero-stats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        .hero-stat {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-radius: var(--radius);
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .hero-stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: white;
+        }
+        .hero-stat-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.8);
+            margin-top: 4px;
         }
 
         .dna-animation {
@@ -422,7 +463,7 @@
         <a href="../community.html">Contact</a>
     </div>
 
-    <!-- Hero Section -->
+    <!-- Hero Section with Stats -->
     <section class="variants-hero">
         <div class="dna-animation">
             <div class="dna-strand" style="left: 10%; animation-delay: 0s;"></div>
@@ -433,20 +474,46 @@
             <div class="dna-strand" style="left: 85%; animation-delay: 2.5s;"></div>
         </div>
         <div class="container" style="position: relative; z-index: 1;">
-            <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 1rem;">
+            <h1 style="font-size: clamp(1.75rem, 4vw, 2.5rem); margin-bottom: 0.75rem;">
                 G6PD Variant Database
             </h1>
-            <p style="font-size: 1.1rem; opacity: 0.9; max-width: 600px;">
+            <p style="font-size: 1rem; opacity: 0.9; max-width: 600px;">
                 Explore over 200 documented G6PD variants with clinical classifications,
                 enzyme activity levels, and geographic distributions.
             </p>
+
+            <!-- Stats Row - Fixed numbers at top -->
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-value" id="totalVariants">217</div>
+                    <div class="hero-stat-label">Total Variants</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value" id="class1Count">54</div>
+                    <div class="hero-stat-label">Class I (Severe)</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value" id="class2Count">89</div>
+                    <div class="hero-stat-label">Class II (Moderate)</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value" id="affectedPop">400M+</div>
+                    <div class="hero-stat-label">People Affected</div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- Search Section -->
-    <section class="section">
+    <!-- Common Variants Section with Search -->
+    <section class="section-compact section-alt">
         <div class="container">
-            <div class="search-container fade-in">
+            <h2 class="section-title fade-in" style="margin-bottom: 0.5rem;">Common Variants</h2>
+            <p class="section-subtitle fade-in" style="margin-bottom: 1.25rem;">
+                The most clinically significant G6PD variants worldwide
+            </p>
+
+            <!-- Search Box - Integrated with Common Variants -->
+            <div class="search-container fade-in" style="margin-top: 0; margin-bottom: 1.5rem; box-shadow: none; padding: 1rem; background: white; border: 1px solid var(--border);">
                 <div class="search-box">
                     <input type="text" class="search-input" placeholder="Search by variant name, mutation, or region..." id="variantSearch">
                     <button class="search-btn">
@@ -461,38 +528,9 @@
                     <span class="filter-pill" data-class="3">Class III</span>
                     <span class="filter-pill" data-class="4">Class IV</span>
                 </div>
-
-                <div class="stats-row">
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalVariants">217</div>
-                        <div class="stat-label">Total Variants</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="class1Count">54</div>
-                        <div class="stat-label">Class I (Severe)</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="class2Count">89</div>
-                        <div class="stat-label">Class II (Moderate)</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="affectedPop">400M+</div>
-                        <div class="stat-label">People Affected</div>
-                    </div>
-                </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Variant Table -->
-    <section class="section section-alt">
-        <div class="container">
-            <h2 class="section-title fade-in">Common Variants</h2>
-            <p class="section-subtitle fade-in">
-                The most clinically significant G6PD variants worldwide
-            </p>
-
-            <div class="table-responsive fade-in" style="margin-top: 2rem;">
+            <div class="table-responsive fade-in" style="margin-top: 0;">
                 <table class="variant-table" id="variantTable">
                     <thead>
                         <tr>
@@ -567,14 +605,14 @@
     </section>
 
     <!-- Enzyme Activity Chart -->
-    <section class="section">
+    <section class="section-compact">
         <div class="container">
-            <h2 class="section-title fade-in">Enzyme Activity Comparison</h2>
-            <p class="section-subtitle fade-in">
+            <h2 class="section-title fade-in" style="margin-bottom: 0.5rem;">Enzyme Activity Comparison</h2>
+            <p class="section-subtitle fade-in" style="margin-bottom: 1rem;">
                 Residual enzyme activity levels across different variant classes
             </p>
 
-            <div class="chart-container fade-in" style="margin-top: 2rem;">
+            <div class="chart-container fade-in" style="margin-top: 0;">
                 <div id="activityBars">
                     <div class="enzyme-bar">
                         <div class="enzyme-label">Wild Type</div>
@@ -613,9 +651,9 @@
                     </div>
                 </div>
 
-                <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
-                    <h4 style="margin-bottom: 1rem;">WHO Classification System</h4>
-                    <div class="grid-2" style="gap: 1rem;">
+                <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                    <h4 style="margin-bottom: 0.75rem;">WHO Classification System</h4>
+                    <div class="grid-2" style="gap: 0.75rem;">
                         <div style="padding: 1rem; background: #fef2f2; border-radius: var(--radius); border-left: 3px solid #ef4444;">
                             <strong>Class I:</strong> Chronic hemolytic anemia with severe enzyme deficiency
                         </div>
@@ -635,14 +673,14 @@
     </section>
 
     <!-- Geographic Distribution -->
-    <section class="section section-alt">
+    <section class="section-compact section-alt">
         <div class="container">
-            <h2 class="section-title fade-in">Geographic Distribution</h2>
-            <p class="section-subtitle fade-in">
+            <h2 class="section-title fade-in" style="margin-bottom: 0.5rem;">Geographic Distribution</h2>
+            <p class="section-subtitle fade-in" style="margin-bottom: 1rem;">
                 G6PD deficiency prevalence correlates with historical malaria-endemic regions
             </p>
 
-            <div class="world-map-container fade-in" style="margin-top: 2rem;">
+            <div class="world-map-container fade-in" style="margin-top: 0;">
                 <!-- Interactive Leaflet Map -->
                 <div id="g6pd-map" style="width: 100%; height: 450px; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);"></div>
 
