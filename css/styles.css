@@ -143,8 +143,8 @@ nav.dark .logo {
 }
 
 .logo-icon {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     background: var(--gradient-1);
     border-radius: 10px;
     display: flex;
@@ -152,7 +152,8 @@ nav.dark .logo {
     justify-content: center;
     color: white;
     font-weight: 800;
-    font-size: 0.9rem;
+    font-size: 0.65rem;
+    letter-spacing: -0.5px;
 }
 
 .nav-links {
@@ -212,6 +213,8 @@ nav.dark .nav-links a::after {
 /* Dropdown */
 .nav-dropdown {
     position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .dropdown-toggle {
