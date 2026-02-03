@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacogenomics | G6PD Research</title>
+    <meta name="description" content="Understanding drug-gene interactions and oxidative stress mechanisms in G6PD deficiency.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Shared Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <style>
+        .pharma-hero {
+            background: linear-gradient(135deg, #059669 0%, #047857 50%, #065f46 100%);
+            padding: 120px 1rem 60px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .pharma-hero {
+                padding: 150px 2rem 80px;
+            }
+        }
+
+        .molecule-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+        }
+
+        .molecule {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .pathway-diagram {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        @media (min-width: 768px) {
+            .pathway-diagram {
+                padding: 2rem;
+            }
+        }
+
+        .pathway-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-radius: var(--radius);
+        }
+
+        @media (min-width: 768px) {
+            .pathway-visual {
+                flex-direction: row;
+                justify-content: center;
+                gap: 1rem;
+                padding: 2rem;
+            }
+        }
+
+        .pathway-node {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--radius);
+            text-align: center;
+            box-shadow: var(--shadow);
+            min-width: 120px;
+            position: relative;
+        }
+
+        .pathway-node.enzyme {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .pathway-node.blocked {
+            background: #fecaca;
+            border: 2px dashed #ef4444;
+        }
+
+        .pathway-arrow {
+            color: #10b981;
+            transform: rotate(90deg);
+        }
+
+        @media (min-width: 768px) {
+            .pathway-arrow {
+                transform: rotate(0deg);
+            }
+        }
+
+        .drug-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .drug-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .drug-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .drug-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .drug-class {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .risk-badge {
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .risk-high { background: #fecaca; color: #991b1b; }
+        .risk-moderate { background: #fef3c7; color: #92400e; }
+        .risk-low { background: #d1fae5; color: #065f46; }
+
+        .mechanism-box {
+            background: var(--bg-alt);
+            padding: 1rem;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .oxidative-stress-visual {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .stress-meter {
+            position: relative;
+            height: 30px;
+            background: linear-gradient(90deg, #10b981, #eab308, #ef4444);
+            border-radius: var(--radius);
+            margin: 2rem 0;
+        }
+
+        .stress-indicator {
+            position: absolute;
+            top: -8px;
+            width: 20px;
+            height: 46px;
+            background: white;
+            border: 3px solid #1f2937;
+            border-radius: 4px;
+            transition: left 0.5s ease-out;
+        }
+
+        .stress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .rbc-animation {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .rbc {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(ellipse at 30% 30%, #fee2e2 0%, #ef4444 50%, #dc2626 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: rbcFloat 3s ease-in-out infinite;
+        }
+
+        .rbc::before {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            top: 15px;
+            left: 15px;
+        }
+
+        .rbc.damaged {
+            animation: rbcDamage 2s ease-in-out infinite;
+            background: radial-gradient(ellipse at 30% 30%, #fef3c7 0%, #f59e0b 50%, #d97706 100%);
+        }
+
+        .rbc.lysed {
+            animation: rbcLyse 2s ease-in-out infinite;
+            opacity: 0.5;
+            border: 2px dashed #dc2626;
+            background: transparent;
+        }
+
+        @keyframes rbcFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes rbcDamage {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(0.9); }
+        }
+
+        @keyframes rbcLyse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        .trigger-categories {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .trigger-categories {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .trigger-category {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .trigger-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .trigger-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .trigger-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .trigger-list li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">G6</div>
+                <span>G6PD Research</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="../about.html">About</a></li>
+                <li class="nav-dropdown">
+                    <a href="../research.html" class="dropdown-toggle active">
+                        Research <i data-lucide="chevron-down" style="width: 14px; height: 14px;"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="../research.html">Overview</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="alphafold.html">AlphaFold Analysis</a>
+                        <a href="molecular-dynamics.html">Molecular Dynamics</a>
+                        <a href="variants.html">Variant Database</a>
+                        <a href="pharmacogenomics.html" class="active">Pharmacogenomics</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="ml-discovery.html">ML Drug Discovery</a>
+                        <a href="crispr.html">CRISPR Therapeutics</a>
+                        <a href="clinical-trials.html">Clinical Trials</a>
+                    </div>
+                </li>
+                <li><a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a></li>
+                <li><a href="../community.html">Contact</a></li>
+            </ul>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <i data-lucide="menu" style="width: 24px; height: 24px;"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <a href="../about.html">About</a>
+        <a href="../research.html">Research</a>
+        <a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a>
+        <a href="../community.html">Contact</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="pharma-hero">
+        <div class="molecule-bg">
+            <div class="molecule" style="width: 40px; height: 40px; top: 20%; left: 10%; animation-delay: 0s;"></div>
+            <div class="molecule" style="width: 60px; height: 60px; top: 60%; left: 20%; animation-delay: 1s;"></div>
+            <div class="molecule" style="width: 30px; height: 30px; top: 30%; left: 80%; animation-delay: 2s;"></div>
+            <div class="molecule" style="width: 50px; height: 50px; top: 70%; left: 70%; animation-delay: 0.5s;"></div>
+            <div class="molecule" style="width: 35px; height: 35px; top: 40%; left: 50%; animation-delay: 1.5s;"></div>
+        </div>
+        <div class="container" style="position: relative; z-index: 1;">
+            <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 1rem;">
+                Pharmacogenomics
+            </h1>
+            <p style="font-size: 1.1rem; opacity: 0.9; max-width: 600px;">
+                Understanding how G6PD deficiency affects drug metabolism, oxidative stress
+                pathways, and medication safety.
+            </p>
+        </div>
+    </section>
+
+    <!-- Pentose Phosphate Pathway -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">The Pentose Phosphate Pathway</h2>
+            <p class="section-subtitle fade-in">
+                G6PD catalyzes the first step in the pathway that protects red blood cells
+            </p>
+
+            <div class="pathway-diagram fade-in" style="margin-top: 2rem;">
+                <div class="pathway-visual">
+                    <div class="pathway-node">
+                        <strong>G6P</strong>
+                        <div style="font-size: 0.75rem; color: var(--text-light);">Glucose-6-Phosphate</div>
+                    </div>
+                    <i data-lucide="arrow-right" class="pathway-arrow" style="width: 24px; height: 24px;"></i>
+                    <div class="pathway-node enzyme">
+                        <strong>G6PD</strong>
+                        <div style="font-size: 0.75rem; opacity: 0.9;">Enzyme</div>
+                    </div>
+                    <i data-lucide="arrow-right" class="pathway-arrow" style="width: 24px; height: 24px;"></i>
+                    <div class="pathway-node">
+                        <strong>NADPH</strong>
+                        <div style="font-size: 0.75rem; color: var(--text-light);">Reducing Power</div>
+                    </div>
+                    <i data-lucide="arrow-right" class="pathway-arrow" style="width: 24px; height: 24px;"></i>
+                    <div class="pathway-node">
+                        <strong>GSH</strong>
+                        <div style="font-size: 0.75rem; color: var(--text-light);">Glutathione</div>
+                    </div>
+                    <i data-lucide="arrow-right" class="pathway-arrow" style="width: 24px; height: 24px;"></i>
+                    <div class="pathway-node" style="background: #d1fae5; border: 2px solid #10b981;">
+                        <strong>ROS Defense</strong>
+                        <div style="font-size: 0.75rem; color: #065f46;">Cell Protection</div>
+                    </div>
+                </div>
+
+                <div class="grid-3" style="margin-top: 2rem; gap: 1rem;">
+                    <div style="padding: 1rem; background: var(--bg-alt); border-radius: var(--radius);">
+                        <h4 style="color: var(--primary); margin-bottom: 0.5rem;">NADPH Production</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-light);">G6PD generates NADPH, the cell's primary reducing agent.</p>
+                    </div>
+                    <div style="padding: 1rem; background: var(--bg-alt); border-radius: var(--radius);">
+                        <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Glutathione Regeneration</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-light);">NADPH recycles oxidized glutathione back to its active form.</p>
+                    </div>
+                    <div style="padding: 1rem; background: var(--bg-alt); border-radius: var(--radius);">
+                        <h4 style="color: var(--primary); margin-bottom: 0.5rem;">ROS Neutralization</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-light);">Reduced glutathione neutralizes harmful reactive oxygen species.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Oxidative Stress Visualization -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title fade-in">Oxidative Stress in G6PD Deficiency</h2>
+            <p class="section-subtitle fade-in">
+                Visualizing how oxidative stress damages red blood cells
+            </p>
+
+            <div class="oxidative-stress-visual fade-in" style="margin-top: 2rem;">
+                <h3 style="text-align: center; margin-bottom: 1rem;">Oxidative Stress Level</h3>
+
+                <div class="stress-meter">
+                    <div class="stress-indicator" id="stressIndicator" style="left: 10%;"></div>
+                </div>
+                <div class="stress-labels">
+                    <span>Normal</span>
+                    <span>Mild Stress</span>
+                    <span>Moderate</span>
+                    <span>Severe Crisis</span>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="setStressLevel(10)">Baseline</button>
+                    <button class="btn btn-secondary" onclick="setStressLevel(40)">Fava Beans</button>
+                    <button class="btn btn-secondary" onclick="setStressLevel(60)">Infection</button>
+                    <button class="btn btn-secondary" onclick="setStressLevel(85)">Oxidant Drug</button>
+                </div>
+
+                <div class="rbc-animation" style="margin-top: 2rem;">
+                    <div class="rbc" id="rbc1"></div>
+                    <div class="rbc" id="rbc2"></div>
+                    <div class="rbc" id="rbc3"></div>
+                    <div class="rbc" id="rbc4"></div>
+                    <div class="rbc" id="rbc5"></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 1rem;">
+                    <p id="stressDescription" style="color: var(--text-light);">
+                        At baseline, red blood cells maintain normal function with adequate glutathione protection.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- High-Risk Medications -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">Medications & G6PD</h2>
+            <p class="section-subtitle fade-in">
+                Drugs that can trigger hemolytic episodes in G6PD-deficient patients
+            </p>
+
+            <div class="grid-3" style="margin-top: 2rem;">
+                <div class="drug-card fade-in">
+                    <div class="drug-header">
+                        <div>
+                            <div class="drug-name">Primaquine</div>
+                            <div class="drug-class">Antimalarial</div>
+                        </div>
+                        <span class="risk-badge risk-high">High Risk</span>
+                    </div>
+                    <div class="mechanism-box">
+                        <strong>Mechanism:</strong> Generates hydrogen peroxide and superoxide radicals that overwhelm GSH defenses.
+                    </div>
+                </div>
+
+                <div class="drug-card fade-in">
+                    <div class="drug-header">
+                        <div>
+                            <div class="drug-name">Dapsone</div>
+                            <div class="drug-class">Antibiotic</div>
+                        </div>
+                        <span class="risk-badge risk-high">High Risk</span>
+                    </div>
+                    <div class="mechanism-box">
+                        <strong>Mechanism:</strong> Hydroxylamine metabolites cause methemoglobinemia and oxidative hemolysis.
+                    </div>
+                </div>
+
+                <div class="drug-card fade-in">
+                    <div class="drug-header">
+                        <div>
+                            <div class="drug-name">Nitrofurantoin</div>
+                            <div class="drug-class">UTI Antibiotic</div>
+                        </div>
+                        <span class="risk-badge risk-high">High Risk</span>
+                    </div>
+                    <div class="mechanism-box">
+                        <strong>Mechanism:</strong> Redox cycling generates continuous superoxide production.
+                    </div>
+                </div>
+
+                <div class="drug-card fade-in">
+                    <div class="drug-header">
+                        <div>
+                            <div class="drug-name">Rasburicase</div>
+                            <div class="drug-class">Uric Acid Reducer</div>
+                        </div>
+                        <span class="risk-badge risk-high">High Risk</span>
+                    </div>
+                    <div class="mechanism-box">
+                        <strong>Mechanism:</strong> Produces hydrogen peroxide as a byproduct of uric acid oxidation.
+                    </div>
+                </div>
+
+                <div class="drug-card fade-in">
+                    <div class="drug-header">
+                        <div>
+                            <div class="drug-name">Sulfamethoxazole</div>
+                            <div class="drug-class">Sulfonamide</div>
+                        </div>
+                        <span class="risk-badge risk-moderate">Moderate</span>
+                    </div>
+                    <div class="mechanism-box">
+                        <strong>Mechanism:</strong> N-hydroxylated metabolites cause oxidative stress at therapeutic doses.
+                    </div>
+                </div>
+
+                <div class="drug-card fade-in">
+                    <div class="drug-header">
+                        <div>
+                            <div class="drug-name">Aspirin</div>
+                            <div class="drug-class">NSAID</div>
+                        </div>
+                        <span class="risk-badge risk-low">Low Risk</span>
+                    </div>
+                    <div class="mechanism-box">
+                        <strong>Mechanism:</strong> Safe at therapeutic doses; high doses may cause mild oxidative stress.
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; padding: 1.5rem; background: #fef3c7; border-radius: var(--radius); border-left: 4px solid #f59e0b;">
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <i data-lucide="alert-triangle" style="width: 24px; height: 24px; color: #f59e0b; flex-shrink: 0;"></i>
+                    <div>
+                        <strong style="color: #92400e;">Important Note</strong>
+                        <p style="color: #92400e; margin-top: 0.5rem; font-size: 0.9rem;">
+                            Drug reactions in G6PD deficiency vary by variant type and dose. Always consult healthcare
+                            providers before taking new medications. Use <a href="https://www.g6pd.ai" target="_blank" style="color: #92400e; font-weight: 600;">G6PD.ai</a>
+                            to check medication safety.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Common Triggers -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title fade-in">Common Hemolysis Triggers</h2>
+            <p class="section-subtitle fade-in">
+                Beyond medications: other substances that can cause oxidative stress
+            </p>
+
+            <div class="trigger-categories fade-in" style="margin-top: 2rem;">
+                <div class="trigger-category">
+                    <div class="trigger-icon" style="background: #fef3c7;">
+                        <i data-lucide="utensils" style="width: 24px; height: 24px; color: #f59e0b;"></i>
+                    </div>
+                    <h3 style="margin-bottom: 1rem;">Foods</h3>
+                    <ul class="trigger-list">
+                        <li>Fava beans (broad beans) <span class="risk-badge risk-high">High</span></li>
+                        <li>Bitter gourd <span class="risk-badge risk-moderate">Moderate</span></li>
+                        <li>Red wine <span class="risk-badge risk-moderate">Moderate</span></li>
+                        <li>Tonic water (quinine) <span class="risk-badge risk-low">Low</span></li>
+                    </ul>
+                </div>
+
+                <div class="trigger-category">
+                    <div class="trigger-icon" style="background: #dbeafe;">
+                        <i data-lucide="flask-conical" style="width: 24px; height: 24px; color: #3b82f6;"></i>
+                    </div>
+                    <h3 style="margin-bottom: 1rem;">Chemicals</h3>
+                    <ul class="trigger-list">
+                        <li>Naphthalene (mothballs) <span class="risk-badge risk-high">High</span></li>
+                        <li>Henna (lawsone) <span class="risk-badge risk-high">High</span></li>
+                        <li>Methylene blue <span class="risk-badge risk-high">High</span></li>
+                        <li>Menthol <span class="risk-badge risk-low">Low</span></li>
+                    </ul>
+                </div>
+
+                <div class="trigger-category">
+                    <div class="trigger-icon" style="background: #fce7f3;">
+                        <i data-lucide="thermometer" style="width: 24px; height: 24px; color: #ec4899;"></i>
+                    </div>
+                    <h3 style="margin-bottom: 1rem;">Medical Conditions</h3>
+                    <ul class="trigger-list">
+                        <li>Bacterial infections <span class="risk-badge risk-high">High</span></li>
+                        <li>Viral infections <span class="risk-badge risk-moderate">Moderate</span></li>
+                        <li>Diabetic ketoacidosis <span class="risk-badge risk-moderate">Moderate</span></li>
+                        <li>Physical stress <span class="risk-badge risk-low">Low</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- G6PD.ai CTA -->
+    <section class="section">
+        <div class="container-sm text-center">
+            <div class="card fade-in" style="padding: 3rem 2rem; background: linear-gradient(135deg, #059669, #047857);">
+                <h2 style="color: white; margin-bottom: 1rem;">Check Medication Safety with G6PD.ai</h2>
+                <p style="color: rgba(255,255,255,0.9); margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto;">
+                    Use our AI-powered tool to instantly check if medications, foods, and chemicals
+                    are safe for G6PD-deficient individuals.
+                </p>
+                <a href="https://www.g6pd.ai" target="_blank" class="btn btn-lg" style="background: white; color: #059669;">
+                    <i data-lucide="shield-check" style="width: 20px; height: 20px;"></i>
+                    Try G6PD.ai Free
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div>
+                <div class="footer-brand">
+                    <div class="logo-icon">G6</div>
+                    <span style="font-weight: 700;">G6PD Research</span>
+                </div>
+                <p class="footer-description">
+                    Advancing G6PD deficiency research through computational biology
+                    and emerging therapeutics.
+                </p>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Research</h4>
+                <ul class="footer-links">
+                    <li><a href="alphafold.html">AlphaFold</a></li>
+                    <li><a href="molecular-dynamics.html">Molecular Dynamics</a></li>
+                    <li><a href="variants.html">Variant Database</a></li>
+                    <li><a href="crispr.html">CRISPR</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Connect</h4>
+                <ul class="footer-links">
+                    <li><a href="../about.html">About Luke</a></li>
+                    <li><a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a></li>
+                    <li><a href="../community.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2024 G6PD Research Initiative by Luke Chen. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Navigation scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileNav = document.getElementById('mobileNav');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileNav.classList.toggle('active');
+        });
+
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Oxidative stress visualization
+        function setStressLevel(level) {
+            const indicator = document.getElementById('stressIndicator');
+            indicator.style.left = (level - 5) + '%';
+
+            const rbcs = document.querySelectorAll('.rbc');
+            const description = document.getElementById('stressDescription');
+
+            if (level < 30) {
+                rbcs.forEach(rbc => {
+                    rbc.className = 'rbc';
+                });
+                description.textContent = 'At baseline, red blood cells maintain normal function with adequate glutathione protection.';
+            } else if (level < 50) {
+                rbcs[0].className = 'rbc';
+                rbcs[1].className = 'rbc';
+                rbcs[2].className = 'rbc damaged';
+                rbcs[3].className = 'rbc';
+                rbcs[4].className = 'rbc';
+                description.textContent = 'Fava beans contain vicine and convicine, which generate oxidative stress. Some RBCs show early damage.';
+            } else if (level < 75) {
+                rbcs[0].className = 'rbc';
+                rbcs[1].className = 'rbc damaged';
+                rbcs[2].className = 'rbc damaged';
+                rbcs[3].className = 'rbc damaged';
+                rbcs[4].className = 'rbc';
+                description.textContent = 'Infections increase ROS production. Multiple cells showing oxidative damage. Hemoglobin levels may drop.';
+            } else {
+                rbcs[0].className = 'rbc damaged';
+                rbcs[1].className = 'rbc lysed';
+                rbcs[2].className = 'rbc lysed';
+                rbcs[3].className = 'rbc lysed';
+                rbcs[4].className = 'rbc damaged';
+                description.textContent = 'Severe oxidative crisis! Oxidant drugs cause massive hemolysis. Immediate medical attention required.';
+            }
+        }
+
+        // Initialize with baseline
+        setStressLevel(10);
+    </script>
+</body>
+</html>

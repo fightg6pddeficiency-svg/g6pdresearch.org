@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variant Database | G6PD Research</title>
+    <meta name="description" content="Interactive database of G6PD genetic variants, their clinical significance, and geographic distribution.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Shared Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <style>
+        .variants-hero {
+            background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 50%, #4c1d95 100%);
+            padding: 120px 1rem 60px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .variants-hero {
+                padding: 150px 2rem 80px;
+            }
+        }
+
+        .dna-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            opacity: 0.15;
+        }
+
+        .dna-strand {
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            animation: dnaFloat 4s ease-in-out infinite;
+        }
+
+        .dna-strand::before,
+        .dna-strand::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+        }
+
+        @keyframes dnaFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+
+        .search-container {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            margin-top: -40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        @media (min-width: 768px) {
+            .search-container {
+                padding: 2rem;
+            }
+        }
+
+        .search-box {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .search-box {
+                flex-direction: row;
+            }
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .search-btn {
+            padding: 14px 28px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .search-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .filter-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .filter-pill {
+            padding: 6px 14px;
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-pill:hover,
+        .filter-pill.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .stats-row {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .stat-card {
+            background: var(--bg-alt);
+            padding: 1.25rem;
+            border-radius: var(--radius);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .variant-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        .variant-table th,
+        .variant-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .variant-table th {
+            background: var(--bg-alt);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+        }
+
+        .variant-table tr:hover {
+            background: rgba(67, 97, 238, 0.02);
+        }
+
+        .variant-name {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .variant-mutation {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            background: var(--bg-alt);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .severity-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .severity-1 { background: #dcfce7; color: #166534; }
+        .severity-2 { background: #fef9c3; color: #854d0e; }
+        .severity-3 { background: #fed7aa; color: #9a3412; }
+        .severity-4 { background: #fecaca; color: #991b1b; }
+
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .world-map-container {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        @media (min-width: 768px) {
+            .world-map-container {
+                padding: 2rem;
+            }
+        }
+
+        .map-placeholder {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .map-placeholder {
+                height: 400px;
+            }
+        }
+
+        .map-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .map-dot::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            animation: ripple 2s ease-out infinite;
+        }
+
+        @keyframes ripple {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        .variant-detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .variant-detail-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                padding: 2rem;
+            }
+        }
+
+        .enzyme-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .enzyme-label {
+            width: 100px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .enzyme-track {
+            flex: 1;
+            height: 24px;
+            background: var(--bg-alt);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .enzyme-fill {
+            height: 100%;
+            border-radius: var(--radius);
+            transition: width 1s ease-out;
+        }
+
+        .enzyme-value {
+            width: 50px;
+            text-align: right;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">G6</div>
+                <span>G6PD Research</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="../about.html">About</a></li>
+                <li class="nav-dropdown">
+                    <a href="../research.html" class="dropdown-toggle active">
+                        Research <i data-lucide="chevron-down" style="width: 14px; height: 14px;"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="../research.html">Overview</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="alphafold.html">AlphaFold Analysis</a>
+                        <a href="molecular-dynamics.html">Molecular Dynamics</a>
+                        <a href="variants.html" class="active">Variant Database</a>
+                        <a href="pharmacogenomics.html">Pharmacogenomics</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="ml-discovery.html">ML Drug Discovery</a>
+                        <a href="crispr.html">CRISPR Therapeutics</a>
+                        <a href="clinical-trials.html">Clinical Trials</a>
+                    </div>
+                </li>
+                <li><a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a></li>
+                <li><a href="../community.html">Contact</a></li>
+            </ul>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <i data-lucide="menu" style="width: 24px; height: 24px;"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <a href="../about.html">About</a>
+        <a href="../research.html">Research</a>
+        <a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a>
+        <a href="../community.html">Contact</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="variants-hero">
+        <div class="dna-animation">
+            <div class="dna-strand" style="left: 10%; animation-delay: 0s;"></div>
+            <div class="dna-strand" style="left: 25%; animation-delay: 0.5s;"></div>
+            <div class="dna-strand" style="left: 40%; animation-delay: 1s;"></div>
+            <div class="dna-strand" style="left: 55%; animation-delay: 1.5s;"></div>
+            <div class="dna-strand" style="left: 70%; animation-delay: 2s;"></div>
+            <div class="dna-strand" style="left: 85%; animation-delay: 2.5s;"></div>
+        </div>
+        <div class="container" style="position: relative; z-index: 1;">
+            <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 1rem;">
+                G6PD Variant Database
+            </h1>
+            <p style="font-size: 1.1rem; opacity: 0.9; max-width: 600px;">
+                Explore over 200 documented G6PD variants with clinical classifications,
+                enzyme activity levels, and geographic distributions.
+            </p>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="section">
+        <div class="container">
+            <div class="search-container fade-in">
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="Search by variant name, mutation, or region..." id="variantSearch">
+                    <button class="search-btn">
+                        <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+                        Search
+                    </button>
+                </div>
+                <div class="filter-pills">
+                    <span class="filter-pill active" data-class="all">All Classes</span>
+                    <span class="filter-pill" data-class="1">Class I</span>
+                    <span class="filter-pill" data-class="2">Class II</span>
+                    <span class="filter-pill" data-class="3">Class III</span>
+                    <span class="filter-pill" data-class="4">Class IV</span>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalVariants">217</div>
+                        <div class="stat-label">Total Variants</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="class1Count">54</div>
+                        <div class="stat-label">Class I (Severe)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="class2Count">89</div>
+                        <div class="stat-label">Class II (Moderate)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="affectedPop">400M+</div>
+                        <div class="stat-label">People Affected</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Variant Table -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title fade-in">Common Variants</h2>
+            <p class="section-subtitle fade-in">
+                The most clinically significant G6PD variants worldwide
+            </p>
+
+            <div class="table-responsive fade-in" style="margin-top: 2rem;">
+                <table class="variant-table" id="variantTable">
+                    <thead>
+                        <tr>
+                            <th>Variant Name</th>
+                            <th>Mutation</th>
+                            <th>Class</th>
+                            <th>Activity</th>
+                            <th>Prevalence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr onclick="showVariantDetail('mediterranean')">
+                            <td><span class="variant-name">G6PD Mediterranean</span></td>
+                            <td><span class="variant-mutation">S188F</span></td>
+                            <td><span class="severity-badge severity-2">Class II</span></td>
+                            <td>0-10%</td>
+                            <td>Mediterranean, Middle East</td>
+                        </tr>
+                        <tr onclick="showVariantDetail('a-minus')">
+                            <td><span class="variant-name">G6PD A-</span></td>
+                            <td><span class="variant-mutation">V68M + N126D</span></td>
+                            <td><span class="severity-badge severity-3">Class III</span></td>
+                            <td>8-20%</td>
+                            <td>Sub-Saharan Africa</td>
+                        </tr>
+                        <tr onclick="showVariantDetail('canton')">
+                            <td><span class="variant-name">G6PD Canton</span></td>
+                            <td><span class="variant-mutation">R459L</span></td>
+                            <td><span class="severity-badge severity-2">Class II</span></td>
+                            <td>4-25%</td>
+                            <td>Southeast Asia, China</td>
+                        </tr>
+                        <tr onclick="showVariantDetail('mahidol')">
+                            <td><span class="variant-name">G6PD Mahidol</span></td>
+                            <td><span class="variant-mutation">G163S</span></td>
+                            <td><span class="severity-badge severity-3">Class III</span></td>
+                            <td>5-32%</td>
+                            <td>Thailand, Myanmar</td>
+                        </tr>
+                        <tr onclick="showVariantDetail('seattle')">
+                            <td><span class="variant-name">G6PD Seattle</span></td>
+                            <td><span class="variant-mutation">D282H</span></td>
+                            <td><span class="severity-badge severity-1">Class IV</span></td>
+                            <td>60-100%</td>
+                            <td>Sardinia, Papua New Guinea</td>
+                        </tr>
+                        <tr onclick="showVariantDetail('orissa')">
+                            <td><span class="variant-name">G6PD Orissa</span></td>
+                            <td><span class="variant-mutation">A44G</span></td>
+                            <td><span class="severity-badge severity-3">Class III</span></td>
+                            <td>10-25%</td>
+                            <td>India</td>
+                        </tr>
+                        <tr onclick="showVariantDetail('vanua-lava')">
+                            <td><span class="variant-name">G6PD Vanua Lava</span></td>
+                            <td><span class="variant-mutation">L128P</span></td>
+                            <td><span class="severity-badge severity-2">Class II</span></td>
+                            <td>1-7%</td>
+                            <td>Vanuatu, Pacific Islands</td>
+                        </tr>
+                        <tr onclick="showVariantDetail('aures')">
+                            <td><span class="variant-name">G6PD Aurès</span></td>
+                            <td><span class="variant-mutation">I48T</span></td>
+                            <td><span class="severity-badge severity-2">Class II</span></td>
+                            <td>5-10%</td>
+                            <td>North Africa</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enzyme Activity Chart -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">Enzyme Activity Comparison</h2>
+            <p class="section-subtitle fade-in">
+                Residual enzyme activity levels across different variant classes
+            </p>
+
+            <div class="chart-container fade-in" style="margin-top: 2rem;">
+                <div id="activityBars">
+                    <div class="enzyme-bar">
+                        <div class="enzyme-label">Wild Type</div>
+                        <div class="enzyme-track">
+                            <div class="enzyme-fill" style="width: 0%; background: #10b981;" data-width="100"></div>
+                        </div>
+                        <div class="enzyme-value">100%</div>
+                    </div>
+                    <div class="enzyme-bar">
+                        <div class="enzyme-label">Class IV</div>
+                        <div class="enzyme-track">
+                            <div class="enzyme-fill" style="width: 0%; background: #22c55e;" data-width="80"></div>
+                        </div>
+                        <div class="enzyme-value">60-100%</div>
+                    </div>
+                    <div class="enzyme-bar">
+                        <div class="enzyme-label">Class III</div>
+                        <div class="enzyme-track">
+                            <div class="enzyme-fill" style="width: 0%; background: #eab308;" data-width="35"></div>
+                        </div>
+                        <div class="enzyme-value">10-60%</div>
+                    </div>
+                    <div class="enzyme-bar">
+                        <div class="enzyme-label">Class II</div>
+                        <div class="enzyme-track">
+                            <div class="enzyme-fill" style="width: 0%; background: #f97316;" data-width="10"></div>
+                        </div>
+                        <div class="enzyme-value">&lt;10%</div>
+                    </div>
+                    <div class="enzyme-bar">
+                        <div class="enzyme-label">Class I</div>
+                        <div class="enzyme-track">
+                            <div class="enzyme-fill" style="width: 0%; background: #ef4444;" data-width="3"></div>
+                        </div>
+                        <div class="enzyme-value">&lt;5%</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                    <h4 style="margin-bottom: 1rem;">WHO Classification System</h4>
+                    <div class="grid-2" style="gap: 1rem;">
+                        <div style="padding: 1rem; background: #fef2f2; border-radius: var(--radius); border-left: 3px solid #ef4444;">
+                            <strong>Class I:</strong> Chronic hemolytic anemia with severe enzyme deficiency
+                        </div>
+                        <div style="padding: 1rem; background: #fff7ed; border-radius: var(--radius); border-left: 3px solid #f97316;">
+                            <strong>Class II:</strong> Severe enzyme deficiency (&lt;10% activity)
+                        </div>
+                        <div style="padding: 1rem; background: #fefce8; border-radius: var(--radius); border-left: 3px solid #eab308;">
+                            <strong>Class III:</strong> Moderate enzyme deficiency (10-60% activity)
+                        </div>
+                        <div style="padding: 1rem; background: #f0fdf4; border-radius: var(--radius); border-left: 3px solid #22c55e;">
+                            <strong>Class IV:</strong> Normal enzyme activity (60-100%)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Geographic Distribution -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title fade-in">Geographic Distribution</h2>
+            <p class="section-subtitle fade-in">
+                G6PD deficiency prevalence correlates with historical malaria-endemic regions
+            </p>
+
+            <div class="world-map-container fade-in" style="margin-top: 2rem;">
+                <div class="map-placeholder">
+                    <!-- Simplified world map with dots -->
+                    <div class="map-dot" style="top: 45%; left: 48%;" title="Mediterranean"></div>
+                    <div class="map-dot" style="top: 50%; left: 55%;" title="Middle East"></div>
+                    <div class="map-dot" style="top: 60%; left: 50%;" title="Sub-Saharan Africa"></div>
+                    <div class="map-dot" style="top: 45%; left: 70%;" title="India"></div>
+                    <div class="map-dot" style="top: 50%; left: 78%;" title="Southeast Asia"></div>
+                    <div class="map-dot" style="top: 40%; left: 82%;" title="China"></div>
+                    <div class="map-dot" style="top: 65%; left: 88%;" title="Pacific Islands"></div>
+
+                    <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); text-align: center;">
+                        <i data-lucide="globe" style="width: 48px; height: 48px; color: var(--primary); margin-bottom: 0.5rem;"></i>
+                        <p style="color: var(--text-light);">Interactive map coming soon</p>
+                    </div>
+                </div>
+
+                <div class="grid-3" style="margin-top: 2rem; gap: 1rem;">
+                    <div style="padding: 1rem; background: var(--bg-alt); border-radius: var(--radius); text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">20-30%</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">Sub-Saharan Africa</div>
+                    </div>
+                    <div style="padding: 1rem; background: var(--bg-alt); border-radius: var(--radius); text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">5-25%</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">Mediterranean</div>
+                    </div>
+                    <div style="padding: 1rem; background: var(--bg-alt); border-radius: var(--radius); text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">3-15%</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">Southeast Asia</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div>
+                <div class="footer-brand">
+                    <div class="logo-icon">G6</div>
+                    <span style="font-weight: 700;">G6PD Research</span>
+                </div>
+                <p class="footer-description">
+                    Advancing G6PD deficiency research through computational biology
+                    and emerging therapeutics.
+                </p>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Research</h4>
+                <ul class="footer-links">
+                    <li><a href="alphafold.html">AlphaFold</a></li>
+                    <li><a href="molecular-dynamics.html">Molecular Dynamics</a></li>
+                    <li><a href="variants.html">Variant Database</a></li>
+                    <li><a href="crispr.html">CRISPR</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Connect</h4>
+                <ul class="footer-links">
+                    <li><a href="../about.html">About Luke</a></li>
+                    <li><a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a></li>
+                    <li><a href="../community.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2024 G6PD Research Initiative by Luke Chen. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Navigation scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileNav = document.getElementById('mobileNav');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileNav.classList.toggle('active');
+        });
+
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+
+                    // Animate enzyme bars when visible
+                    if (entry.target.querySelector('#activityBars')) {
+                        animateEnzymeBars();
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Filter pills functionality
+        document.querySelectorAll('.filter-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                filterVariants(pill.dataset.class);
+            });
+        });
+
+        function filterVariants(classFilter) {
+            const rows = document.querySelectorAll('#variantTable tbody tr');
+            rows.forEach(row => {
+                if (classFilter === 'all') {
+                    row.style.display = '';
+                } else {
+                    const badge = row.querySelector('.severity-badge');
+                    if (badge.classList.contains('severity-' + classFilter)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Animate enzyme activity bars
+        function animateEnzymeBars() {
+            document.querySelectorAll('.enzyme-fill').forEach(bar => {
+                const width = bar.dataset.width;
+                setTimeout(() => {
+                    bar.style.width = width + '%';
+                }, 200);
+            });
+        }
+
+        // Search functionality
+        document.getElementById('variantSearch').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#variantTable tbody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        });
+
+        // Show variant detail
+        function showVariantDetail(variant) {
+            console.log('Showing details for:', variant);
+            // In production, this would open a modal with detailed information
+        }
+
+        // Animate stats on load
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            if (!obj) return;
+
+            const isNumber = !isNaN(end);
+            if (!isNumber) {
+                obj.textContent = end;
+                return;
+            }
+
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.textContent = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Initialize animations
+        setTimeout(() => {
+            animateValue('totalVariants', 0, 217, 1500);
+            animateValue('class1Count', 0, 54, 1500);
+            animateValue('class2Count', 0, 89, 1500);
+        }, 500);
+    </script>
+</body>
+</html>

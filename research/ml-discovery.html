@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Drug Discovery | G6PD Research</title>
+    <meta name="description" content="Machine learning approaches for discovering therapeutic compounds to stabilize mutant G6PD enzymes.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Shared Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <style>
+        .ml-hero {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%);
+            padding: 120px 1rem 60px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .ml-hero {
+                padding: 150px 2rem 80px;
+            }
+        }
+
+        .neural-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .node {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            animation: nodePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes nodePulse {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.5); opacity: 0.8; }
+        }
+
+        .pipeline-container {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            margin-top: -40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .pipeline-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .pipeline-visual {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        .pipeline-step {
+            flex: 1;
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--bg-alt);
+            border-radius: var(--radius);
+            position: relative;
+        }
+
+        .pipeline-step.active {
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            border: 2px solid #6366f1;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin: 0 auto 1rem;
+        }
+
+        .step-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-light);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: var(--primary);
+        }
+
+        .pipeline-arrow {
+            display: none;
+            color: var(--primary);
+        }
+
+        @media (min-width: 768px) {
+            .pipeline-arrow {
+                display: block;
+            }
+        }
+
+        .model-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border-top: 4px solid var(--primary);
+        }
+
+        .model-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .compound-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .compound-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .compound-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .compound-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .compound-structure {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            background: var(--bg-alt);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .compound-score {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #d1fae5;
+            color: #065f46;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .training-visual {
+            background: #1f2937;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            color: white;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        .training-line {
+            display: flex;
+            gap: 1rem;
+            padding: 4px 0;
+            opacity: 0;
+            animation: fadeInLine 0.3s forwards;
+        }
+
+        @keyframes fadeInLine {
+            to { opacity: 1; }
+        }
+
+        .epoch { color: #60a5fa; }
+        .loss { color: #f87171; }
+        .accuracy { color: #34d399; }
+
+        .architecture-diagram {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .layer-row {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin: 8px 0;
+        }
+
+        .neuron {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            animation: neuronPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes neuronPulse {
+            0%, 100% { opacity: 0.5; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        .layer-label {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">G6</div>
+                <span>G6PD Research</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="../about.html">About</a></li>
+                <li class="nav-dropdown">
+                    <a href="../research.html" class="dropdown-toggle active">
+                        Research <i data-lucide="chevron-down" style="width: 14px; height: 14px;"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="../research.html">Overview</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="alphafold.html">AlphaFold Analysis</a>
+                        <a href="molecular-dynamics.html">Molecular Dynamics</a>
+                        <a href="variants.html">Variant Database</a>
+                        <a href="pharmacogenomics.html">Pharmacogenomics</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="ml-discovery.html" class="active">ML Drug Discovery</a>
+                        <a href="crispr.html">CRISPR Therapeutics</a>
+                        <a href="clinical-trials.html">Clinical Trials</a>
+                    </div>
+                </li>
+                <li><a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a></li>
+                <li><a href="../community.html">Contact</a></li>
+            </ul>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <i data-lucide="menu" style="width: 24px; height: 24px;"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <a href="../about.html">About</a>
+        <a href="../research.html">Research</a>
+        <a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a>
+        <a href="../community.html">Contact</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="ml-hero">
+        <div class="neural-bg">
+            <div class="node" style="top: 20%; left: 15%; animation-delay: 0s;"></div>
+            <div class="node" style="top: 40%; left: 25%; animation-delay: 0.5s;"></div>
+            <div class="node" style="top: 60%; left: 10%; animation-delay: 1s;"></div>
+            <div class="node" style="top: 30%; left: 75%; animation-delay: 0.3s;"></div>
+            <div class="node" style="top: 70%; left: 85%; animation-delay: 0.8s;"></div>
+            <div class="node" style="top: 50%; left: 60%; animation-delay: 1.2s;"></div>
+            <div class="node" style="top: 80%; left: 40%; animation-delay: 0.6s;"></div>
+            <div class="node" style="top: 15%; left: 50%; animation-delay: 1.5s;"></div>
+        </div>
+        <div class="container" style="position: relative; z-index: 1;">
+            <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 1rem;">
+                ML Drug Discovery
+            </h1>
+            <p style="font-size: 1.1rem; opacity: 0.9; max-width: 600px;">
+                Leveraging machine learning to identify small molecules that stabilize
+                mutant G6PD enzymes and restore catalytic function.
+            </p>
+        </div>
+    </section>
+
+    <!-- Pipeline -->
+    <section class="section">
+        <div class="container">
+            <div class="pipeline-container fade-in">
+                <h3 style="text-align: center; margin-bottom: 2rem;">Drug Discovery Pipeline</h3>
+                <div class="pipeline-visual">
+                    <div class="pipeline-step active">
+                        <div class="step-icon">
+                            <i data-lucide="database" style="width: 24px; height: 24px;"></i>
+                        </div>
+                        <strong>Data Collection</strong>
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;">
+                            ChEMBL, PubChem compound libraries
+                        </p>
+                    </div>
+                    <i data-lucide="arrow-right" class="pipeline-arrow" style="width: 24px; height: 24px;"></i>
+                    <div class="pipeline-step">
+                        <div class="step-icon">
+                            <i data-lucide="binary" style="width: 24px; height: 24px;"></i>
+                        </div>
+                        <strong>Featurization</strong>
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;">
+                            Molecular fingerprints, descriptors
+                        </p>
+                    </div>
+                    <i data-lucide="arrow-right" class="pipeline-arrow" style="width: 24px; height: 24px;"></i>
+                    <div class="pipeline-step">
+                        <div class="step-icon">
+                            <i data-lucide="brain" style="width: 24px; height: 24px;"></i>
+                        </div>
+                        <strong>Model Training</strong>
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;">
+                            Graph neural networks, transformers
+                        </p>
+                    </div>
+                    <i data-lucide="arrow-right" class="pipeline-arrow" style="width: 24px; height: 24px;"></i>
+                    <div class="pipeline-step">
+                        <div class="step-icon">
+                            <i data-lucide="scan" style="width: 24px; height: 24px;"></i>
+                        </div>
+                        <strong>Virtual Screening</strong>
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;">
+                            Score millions of candidates
+                        </p>
+                    </div>
+                    <i data-lucide="arrow-right" class="pipeline-arrow" style="width: 24px; height: 24px;"></i>
+                    <div class="pipeline-step">
+                        <div class="step-icon">
+                            <i data-lucide="flask-conical" style="width: 24px; height: 24px;"></i>
+                        </div>
+                        <strong>Validation</strong>
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;">
+                            MD simulations, experimental tests
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Model Architecture -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title fade-in">Neural Network Architecture</h2>
+            <p class="section-subtitle fade-in">
+                Graph neural network for molecular property prediction
+            </p>
+
+            <div class="grid-2" style="margin-top: 2rem; gap: 2rem;">
+                <div class="architecture-diagram fade-in">
+                    <h4 style="text-align: center; margin-bottom: 1.5rem;">GNN Architecture</h4>
+
+                    <div class="layer-row">
+                        <div class="neuron" style="animation-delay: 0s;"></div>
+                        <div class="neuron" style="animation-delay: 0.1s;"></div>
+                        <div class="neuron" style="animation-delay: 0.2s;"></div>
+                        <div class="neuron" style="animation-delay: 0.3s;"></div>
+                        <div class="neuron" style="animation-delay: 0.4s;"></div>
+                    </div>
+                    <div class="layer-label">Input: Molecular Graph (atoms, bonds)</div>
+
+                    <div class="layer-row" style="margin-top: 1.5rem;">
+                        <div class="neuron" style="animation-delay: 0.2s; background: #8b5cf6;"></div>
+                        <div class="neuron" style="animation-delay: 0.3s; background: #8b5cf6;"></div>
+                        <div class="neuron" style="animation-delay: 0.4s; background: #8b5cf6;"></div>
+                        <div class="neuron" style="animation-delay: 0.5s; background: #8b5cf6;"></div>
+                        <div class="neuron" style="animation-delay: 0.6s; background: #8b5cf6;"></div>
+                        <div class="neuron" style="animation-delay: 0.7s; background: #8b5cf6;"></div>
+                        <div class="neuron" style="animation-delay: 0.8s; background: #8b5cf6;"></div>
+                        <div class="neuron" style="animation-delay: 0.9s; background: #8b5cf6;"></div>
+                    </div>
+                    <div class="layer-label">Message Passing Layers (3x)</div>
+
+                    <div class="layer-row" style="margin-top: 1.5rem;">
+                        <div class="neuron" style="animation-delay: 0.5s; background: #ec4899;"></div>
+                        <div class="neuron" style="animation-delay: 0.6s; background: #ec4899;"></div>
+                        <div class="neuron" style="animation-delay: 0.7s; background: #ec4899;"></div>
+                        <div class="neuron" style="animation-delay: 0.8s; background: #ec4899;"></div>
+                    </div>
+                    <div class="layer-label">Global Pooling</div>
+
+                    <div class="layer-row" style="margin-top: 1.5rem;">
+                        <div class="neuron" style="animation-delay: 0.8s; background: #10b981;"></div>
+                        <div class="neuron" style="animation-delay: 0.9s; background: #10b981;"></div>
+                    </div>
+                    <div class="layer-label">Dense Layers (256, 128)</div>
+
+                    <div class="layer-row" style="margin-top: 1.5rem;">
+                        <div class="neuron" style="animation-delay: 1s; background: #f59e0b; width: 30px; height: 30px;"></div>
+                    </div>
+                    <div class="layer-label">Output: Binding Affinity Score</div>
+                </div>
+
+                <div class="fade-in">
+                    <div class="model-card" style="margin-bottom: 1.5rem;">
+                        <h4 style="margin-bottom: 0.5rem;">Graph Attention Network</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-light);">
+                            Primary model using attention mechanisms to weight atomic contributions
+                            to binding affinity predictions.
+                        </p>
+                        <div class="model-metrics">
+                            <div class="metric">
+                                <div class="metric-value">0.89</div>
+                                <div class="metric-label">ROC-AUC</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">0.76</div>
+                                <div class="metric-label">Precision</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">0.82</div>
+                                <div class="metric-label">Recall</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <h4 style="margin-bottom: 0.5rem;">ChemBERTa Transformer</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-light);">
+                            SMILES-based transformer model for molecular property prediction,
+                            pretrained on 77M compounds.
+                        </p>
+                        <div class="model-metrics">
+                            <div class="metric">
+                                <div class="metric-value">0.91</div>
+                                <div class="metric-label">ROC-AUC</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">0.79</div>
+                                <div class="metric-label">Precision</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">0.85</div>
+                                <div class="metric-label">Recall</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Training Progress -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">Model Training</h2>
+            <p class="section-subtitle fade-in">
+                Real-time training progress for G6PD binding affinity prediction
+            </p>
+
+            <div class="grid-2" style="margin-top: 2rem; gap: 2rem;">
+                <div class="fade-in">
+                    <div class="training-visual" id="trainingLog">
+                        <!-- Training logs will be added here -->
+                    </div>
+                </div>
+
+                <div class="fade-in">
+                    <canvas id="trainingChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Candidates -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title fade-in">Top Candidate Compounds</h2>
+            <p class="section-subtitle fade-in">
+                Predicted stabilizers for G6PD Mediterranean (S188F) variant
+            </p>
+
+            <div class="compound-grid fade-in" style="margin-top: 2rem;">
+                <div class="compound-card">
+                    <div class="compound-structure">🧪</div>
+                    <strong>AG-348 Analog</strong>
+                    <p style="font-size: 0.8rem; color: var(--text-light); margin: 0.5rem 0;">Pyruvate kinase activator derivative</p>
+                    <span class="compound-score">Score: 0.94</span>
+                </div>
+
+                <div class="compound-card">
+                    <div class="compound-structure">⚗️</div>
+                    <strong>NADP+ Mimetic</strong>
+                    <p style="font-size: 0.8rem; color: var(--text-light); margin: 0.5rem 0;">Structural cofactor stabilizer</p>
+                    <span class="compound-score">Score: 0.91</span>
+                </div>
+
+                <div class="compound-card">
+                    <div class="compound-structure">🔬</div>
+                    <strong>Flavonoid-7</strong>
+                    <p style="font-size: 0.8rem; color: var(--text-light); margin: 0.5rem 0;">Natural product derivative</p>
+                    <span class="compound-score">Score: 0.88</span>
+                </div>
+
+                <div class="compound-card">
+                    <div class="compound-structure">💊</div>
+                    <strong>Sulfonamide-12</strong>
+                    <p style="font-size: 0.8rem; color: var(--text-light); margin: 0.5rem 0;">Active site binder</p>
+                    <span class="compound-score">Score: 0.85</span>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <p style="color: var(--text-light); font-size: 0.9rem;">
+                    * Compounds are computational predictions requiring experimental validation
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Methodology -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">Methodology & Tools</h2>
+
+            <div class="grid-3 fade-in" style="margin-top: 2rem;">
+                <div class="card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">
+                        <i data-lucide="code" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    <h3>PyTorch Geometric</h3>
+                    <p>Graph neural network implementation for molecular representation learning and property prediction.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                        <i data-lucide="atom" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    <h3>RDKit</h3>
+                    <p>Cheminformatics toolkit for molecular fingerprints, descriptors, and 3D conformer generation.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                        <i data-lucide="database" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    <h3>ChEMBL Database</h3>
+                    <p>Curated bioactivity data for model training, including enzyme inhibition and binding assays.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div>
+                <div class="footer-brand">
+                    <div class="logo-icon">G6</div>
+                    <span style="font-weight: 700;">G6PD Research</span>
+                </div>
+                <p class="footer-description">
+                    Advancing G6PD deficiency research through computational biology
+                    and emerging therapeutics.
+                </p>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Research</h4>
+                <ul class="footer-links">
+                    <li><a href="alphafold.html">AlphaFold</a></li>
+                    <li><a href="molecular-dynamics.html">Molecular Dynamics</a></li>
+                    <li><a href="variants.html">Variant Database</a></li>
+                    <li><a href="crispr.html">CRISPR</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Connect</h4>
+                <ul class="footer-links">
+                    <li><a href="../about.html">About Luke</a></li>
+                    <li><a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a></li>
+                    <li><a href="../community.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2024 G6PD Research Initiative by Luke Chen. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Navigation
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileNav = document.getElementById('mobileNav');
+        mobileMenuBtn.addEventListener('click', () => mobileNav.classList.toggle('active'));
+
+        // Animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Training log simulation
+        const trainingLog = document.getElementById('trainingLog');
+        const epochs = [
+            { epoch: 1, loss: 0.892, acc: 0.623 },
+            { epoch: 5, loss: 0.654, acc: 0.712 },
+            { epoch: 10, loss: 0.423, acc: 0.789 },
+            { epoch: 15, loss: 0.312, acc: 0.834 },
+            { epoch: 20, loss: 0.245, acc: 0.867 },
+            { epoch: 25, loss: 0.198, acc: 0.889 },
+            { epoch: 30, loss: 0.167, acc: 0.901 },
+            { epoch: 35, loss: 0.142, acc: 0.912 },
+            { epoch: 40, loss: 0.128, acc: 0.918 },
+            { epoch: 45, loss: 0.115, acc: 0.924 },
+            { epoch: 50, loss: 0.108, acc: 0.928 }
+        ];
+
+        let currentEpoch = 0;
+        function addTrainingLine() {
+            if (currentEpoch < epochs.length) {
+                const e = epochs[currentEpoch];
+                const line = document.createElement('div');
+                line.className = 'training-line';
+                line.style.animationDelay = (currentEpoch * 0.1) + 's';
+                line.innerHTML = `
+                    <span class="epoch">Epoch ${e.epoch.toString().padStart(2, '0')}/50</span>
+                    <span class="loss">Loss: ${e.loss.toFixed(4)}</span>
+                    <span class="accuracy">Acc: ${(e.acc * 100).toFixed(1)}%</span>
+                `;
+                trainingLog.appendChild(line);
+                trainingLog.scrollTop = trainingLog.scrollHeight;
+                currentEpoch++;
+                setTimeout(addTrainingLine, 800);
+            }
+        }
+
+        // Training chart
+        const ctx = document.getElementById('trainingChart').getContext('2d');
+        const chartData = {
+            labels: epochs.map(e => e.epoch),
+            datasets: [
+                {
+                    label: 'Training Loss',
+                    data: epochs.map(e => e.loss),
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Accuracy',
+                    data: epochs.map(e => e.acc),
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    yAxisID: 'y1'
+                }
+            ]
+        };
+
+        new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Epoch'
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Loss'
+                        },
+                        min: 0,
+                        max: 1
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Accuracy'
+                        },
+                        min: 0.5,
+                        max: 1,
+                        grid: {
+                            drawOnChartArea: false,
+                        }
+                    }
+                }
+            }
+        });
+
+        // Start training animation when visible
+        const trainingObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && currentEpoch === 0) {
+                    setTimeout(addTrainingLine, 500);
+                }
+            });
+        }, { threshold: 0.3 });
+
+        trainingObserver.observe(trainingLog);
+    </script>
+</body>
+</html>
