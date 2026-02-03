@@ -290,15 +290,15 @@
 
             <div class="hero-stats">
                 <div class="hero-stat">
-                    <div class="hero-stat-value" data-count="400">0</div>
+                    <div class="hero-stat-value" data-count="400" data-suffix="M+">0</div>
                     <div class="hero-stat-label">Million Affected</div>
                 </div>
                 <div class="hero-stat">
-                    <div class="hero-stat-value" data-count="217">0</div>
+                    <div class="hero-stat-value" data-count="217" data-suffix="+">0</div>
                     <div class="hero-stat-label">Known Variants</div>
                 </div>
                 <div class="hero-stat">
-                    <div class="hero-stat-value" data-count="0">0</div>
+                    <div class="hero-stat-value" data-count="0" data-suffix="">0</div>
                     <div class="hero-stat-label">Available Cures</div>
                 </div>
             </div>
@@ -581,6 +581,7 @@
         const counters = document.querySelectorAll('[data-count]');
         const animateCounter = (counter) => {
             const target = parseInt(counter.getAttribute('data-count'));
+            const suffix = counter.getAttribute('data-suffix') || '';
             const duration = 2000;
             const step = target / (duration / 16);
             let current = 0;
@@ -588,10 +589,10 @@
             const updateCounter = () => {
                 current += step;
                 if (current < target) {
-                    counter.textContent = Math.floor(current) + (target >= 100 ? 'M+' : '+');
+                    counter.textContent = Math.floor(current) + suffix;
                     requestAnimationFrame(updateCounter);
                 } else {
-                    counter.textContent = target + (target >= 100 ? 'M+' : target === 0 ? '' : '+');
+                    counter.textContent = target + suffix;
                 }
             };
 
