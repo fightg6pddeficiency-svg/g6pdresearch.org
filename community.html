@@ -5,18 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact & Community | G6PD Research</title>
     <meta name="description" content="Connect with Luke Chen and the G6PD research community. Get in touch for collaborations, questions, or support.">
-
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-
     <!-- Shared Styles -->
     <link rel="stylesheet" href="css/styles.css">
-
     <style>
         .community-hero {
             background: var(--gradient-3);
@@ -24,25 +20,21 @@
             color: white;
             text-align: center;
         }
-
         @media (min-width: 768px) {
             .community-hero {
                 padding: 150px 2rem 80px;
             }
         }
-
         .contact-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 2rem;
         }
-
         @media (min-width: 768px) {
             .contact-grid {
                 grid-template-columns: 1fr 1fr;
             }
         }
-
         .contact-card {
             background: white;
             border-radius: var(--radius-xl);
@@ -51,12 +43,10 @@
             text-align: center;
             transition: all 0.3s;
         }
-
         .contact-card:hover {
             transform: translateY(-4px);
             box-shadow: var(--shadow-lg);
         }
-
         .contact-icon {
             width: 64px;
             height: 64px;
@@ -66,16 +56,13 @@
             justify-content: center;
             margin: 0 auto 1.5rem;
         }
-
         .contact-card h3 {
             margin-bottom: 0.5rem;
         }
-
         .contact-card p {
             color: var(--text-light);
             margin-bottom: 1.5rem;
         }
-
         .contact-link {
             display: inline-flex;
             align-items: center;
@@ -84,11 +71,9 @@
             font-weight: 600;
             text-decoration: none;
         }
-
         .contact-link:hover {
             text-decoration: underline;
         }
-
         .faq-item {
             background: white;
             border-radius: var(--radius);
@@ -96,7 +81,6 @@
             overflow: hidden;
             box-shadow: var(--shadow);
         }
-
         .faq-question {
             padding: 1.25rem 1.5rem;
             display: flex;
@@ -106,35 +90,28 @@
             font-weight: 600;
             transition: all 0.2s;
         }
-
         .faq-question:hover {
             background: var(--bg-alt);
         }
-
         .faq-question i {
             transition: transform 0.3s;
         }
-
         .faq-item.active .faq-question i {
             transform: rotate(180deg);
         }
-
         .faq-answer {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-out;
         }
-
         .faq-item.active .faq-answer {
             max-height: 500px;
         }
-
         .faq-answer-content {
             padding: 0 1.5rem 1.5rem;
             color: var(--text-light);
             line-height: 1.7;
         }
-
         .resource-card {
             background: white;
             border-radius: var(--radius);
@@ -145,12 +122,10 @@
             gap: 1rem;
             transition: all 0.3s;
         }
-
         .resource-card:hover {
             transform: translateX(4px);
             box-shadow: var(--shadow-lg);
         }
-
         .resource-icon {
             width: 48px;
             height: 48px;
@@ -160,35 +135,29 @@
             justify-content: center;
             flex-shrink: 0;
         }
-
         .resource-content h4 {
             margin-bottom: 0.25rem;
         }
-
         .resource-content p {
             font-size: 0.9rem;
             color: var(--text-light);
             margin-bottom: 0.5rem;
         }
-
         .resource-link {
             font-size: 0.85rem;
             color: var(--primary);
             text-decoration: none;
             font-weight: 500;
         }
-
         .resource-link:hover {
             text-decoration: underline;
         }
-
         .social-links {
             display: flex;
             justify-content: center;
             gap: 1rem;
             margin-top: 2rem;
         }
-
         .social-link {
             width: 48px;
             height: 48px;
@@ -200,13 +169,11 @@
             color: var(--text);
             transition: all 0.3s;
         }
-
         .social-link:hover {
             background: var(--primary);
             color: white;
             transform: translateY(-4px);
         }
-
         .newsletter-form {
             display: flex;
             flex-direction: column;
@@ -214,13 +181,11 @@
             max-width: 400px;
             margin: 0 auto;
         }
-
         @media (min-width: 768px) {
             .newsletter-form {
                 flex-direction: row;
             }
         }
-
         .newsletter-input {
             flex: 1;
             padding: 14px 20px;
@@ -230,16 +195,13 @@
             background: rgba(255,255,255,0.1);
             color: white;
         }
-
         .newsletter-input::placeholder {
             color: rgba(255,255,255,0.7);
         }
-
         .newsletter-input:focus {
             outline: none;
             background: rgba(255,255,255,0.2);
         }
-
         .newsletter-btn {
             padding: 14px 28px;
             background: white;
@@ -250,7 +212,6 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-
         .newsletter-btn:hover {
             transform: scale(1.05);
         }
@@ -276,11 +237,8 @@
                         <a href="research/alphafold.html">AlphaFold Analysis</a>
                         <a href="research/molecular-dynamics.html">Molecular Dynamics</a>
                         <a href="research/variants.html">Variant Database</a>
-                        <a href="research/pharmacogenomics.html">Pharmacogenomics</a>
                         <div class="dropdown-divider"></div>
-                        <a href="research/ml-discovery.html">ML Drug Discovery</a>
                         <a href="research/crispr.html">CRISPR Therapeutics</a>
-                        <a href="research/clinical-trials.html">Clinical Trials</a>
                         <a href="research/literature.html">Key Literature</a>
                     </div>
                 </li>
@@ -292,7 +250,6 @@
             </button>
         </div>
     </nav>
-
     <!-- Mobile Navigation -->
     <div class="mobile-nav" id="mobileNav">
         <a href="about.html">About</a>
@@ -300,7 +257,6 @@
         <a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a>
         <a href="community.html">Contact</a>
     </div>
-
     <!-- Hero Section -->
     <section class="community-hero">
         <div class="container">
@@ -313,7 +269,6 @@
             </p>
         </div>
     </section>
-
     <!-- Contact Options -->
     <section class="section">
         <div class="container">
@@ -329,7 +284,6 @@
                         <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
                     </a>
                 </div>
-
                 <div class="contact-card">
                     <div class="contact-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
                         <i data-lucide="message-circle" style="width: 28px; height: 28px; color: white;"></i>
@@ -342,7 +296,6 @@
                     </a>
                 </div>
             </div>
-
             <div class="social-links fade-in">
                 <a href="#" class="social-link" title="Twitter/X">
                     <i data-lucide="twitter" style="width: 20px; height: 20px;"></i>
@@ -356,7 +309,6 @@
             </div>
         </div>
     </section>
-
     <!-- FAQ Section -->
     <section class="section section-alt">
         <div class="container-sm">
@@ -364,7 +316,6 @@
             <p class="section-subtitle fade-in">
                 Common questions about G6PD deficiency and this research
             </p>
-
             <div style="margin-top: 2rem;">
                 <div class="faq-item fade-in">
                     <div class="faq-question" onclick="toggleFaq(this)">
@@ -380,7 +331,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="faq-item fade-in">
                     <div class="faq-question" onclick="toggleFaq(this)">
                         Is there a cure for G6PD deficiency?
@@ -394,7 +344,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="faq-item fade-in">
                     <div class="faq-question" onclick="toggleFaq(this)">
                         How can I check if a medication is safe?
@@ -409,7 +358,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="faq-item fade-in">
                     <div class="faq-question" onclick="toggleFaq(this)">
                         Can I contribute to your research?
@@ -424,7 +372,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="faq-item fade-in">
                     <div class="faq-question" onclick="toggleFaq(this)">
                         What's the connection between G6PD and malaria?
@@ -442,7 +389,6 @@
             </div>
         </div>
     </section>
-
     <!-- Resources -->
     <section class="section">
         <div class="container">
@@ -450,7 +396,6 @@
             <p class="section-subtitle fade-in">
                 External resources for patients, families, and healthcare providers
             </p>
-
             <div class="grid-2 fade-in" style="margin-top: 2rem; gap: 1.5rem;">
                 <div class="resource-card">
                     <div class="resource-icon" style="background: linear-gradient(135deg, #4361ee, #3730a3);">
@@ -464,7 +409,6 @@
                         </a>
                     </div>
                 </div>
-
                 <div class="resource-card">
                     <div class="resource-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
                         <i data-lucide="pill" style="width: 24px; height: 24px; color: white;"></i>
@@ -477,7 +421,6 @@
                         </a>
                     </div>
                 </div>
-
                 <div class="resource-card">
                     <div class="resource-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
                         <i data-lucide="database" style="width: 24px; height: 24px; color: white;"></i>
@@ -490,7 +433,6 @@
                         </a>
                     </div>
                 </div>
-
                 <div class="resource-card">
                     <div class="resource-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
                         <i data-lucide="microscope" style="width: 24px; height: 24px; color: white;"></i>
@@ -506,7 +448,6 @@
             </div>
         </div>
     </section>
-
     <!-- Newsletter -->
     <section class="section" style="background: var(--gradient-1); color: white;">
         <div class="container-sm text-center">
@@ -524,7 +465,6 @@
             </p>
         </div>
     </section>
-
     <!-- Footer -->
     <footer>
         <div class="footer-content">
@@ -538,7 +478,6 @@
                     and emerging therapeutics.
                 </p>
             </div>
-
             <div>
                 <h4 class="footer-title">Research</h4>
                 <ul class="footer-links">
@@ -548,7 +487,6 @@
                     <li><a href="research/crispr.html">CRISPR</a></li>
                 </ul>
             </div>
-
             <div>
                 <h4 class="footer-title">Connect</h4>
                 <ul class="footer-links">
@@ -558,26 +496,21 @@
                 </ul>
             </div>
         </div>
-
         <div class="footer-bottom">
             <p>© 2024 G6PD Research Initiative by Luke Chen. All rights reserved.</p>
         </div>
     </footer>
-
     <script>
         // Initialize Lucide icons
         lucide.createIcons();
-
         // Navigation
         const navbar = document.getElementById('navbar');
         window.addEventListener('scroll', () => {
             navbar.classList.toggle('scrolled', window.scrollY > 50);
         });
-
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const mobileNav = document.getElementById('mobileNav');
         mobileMenuBtn.addEventListener('click', () => mobileNav.classList.toggle('active'));
-
         // Animations
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -586,15 +519,12 @@
                 }
             });
         }, { threshold: 0.1 });
-
         document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
         // FAQ toggle
         function toggleFaq(element) {
             const faqItem = element.parentElement;
             faqItem.classList.toggle('active');
         }
-
         // Newsletter form
         function handleNewsletter(event) {
             event.preventDefault();
