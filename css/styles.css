@@ -160,12 +160,19 @@ nav.dark .logo {
     display: none;
     list-style: none;
     gap: 2rem;
+    align-items: center;
 }
 
 @media (min-width: 768px) {
     .nav-links {
         display: flex;
+        align-items: center;
     }
+}
+
+.nav-links > li {
+    display: flex;
+    align-items: center;
 }
 
 .nav-links a {
