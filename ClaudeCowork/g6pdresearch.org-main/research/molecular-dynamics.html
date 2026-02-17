@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Molecular Dynamics Simulations | G6PD Research</title>
+    <meta name="description" content="Computational simulations of G6PD protein dynamics and mutation effects.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Shared Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <style>
+        .md-hero {
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            padding: 120px 1rem 60px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .md-hero {
+                padding: 150px 2rem 80px;
+            }
+        }
+
+        .md-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            background-size: 30px 30px;
+            animation: drift 20s linear infinite;
+        }
+
+        @keyframes drift {
+            from { transform: translate(0, 0); }
+            to { transform: translate(-30px, -30px); }
+        }
+
+        /* Simulation Canvas */
+        .simulation-container {
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .simulation-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .simulation-title {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .simulation-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .sim-btn {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: var(--radius);
+            color: white;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sim-btn:hover,
+        .sim-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .simulation-canvas {
+            width: 100%;
+            height: 300px;
+            background: rgba(0,0,0,0.3);
+            border-radius: var(--radius-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .simulation-canvas {
+                height: 400px;
+            }
+        }
+
+        /* Animated Protein Molecule */
+        .protein-animation {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .protein-molecule {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            animation: proteinPulse 4s ease-in-out infinite;
+        }
+
+        @media (min-width: 768px) {
+            .protein-molecule {
+                width: 280px;
+                height: 280px;
+            }
+        }
+
+        .protein-core {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 60px rgba(0, 102, 204, 0.5);
+        }
+
+        @media (min-width: 768px) {
+            .protein-core {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        .protein-orbit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 50%;
+        }
+
+        .orbit-1 { width: 140px; height: 140px; animation: orbit 8s linear infinite; }
+        .orbit-2 { width: 200px; height: 200px; animation: orbit 12s linear infinite reverse; }
+        .orbit-3 { width: 260px; height: 260px; animation: orbit 16s linear infinite; }
+
+        @media (min-width: 768px) {
+            .orbit-1 { width: 180px; height: 180px; }
+            .orbit-2 { width: 250px; height: 250px; }
+            .orbit-3 { width: 320px; height: 320px; }
+        }
+
+        @keyframes orbit {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes proteinPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .amino-acid {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--secondary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        .amino-acid.mutant {
+            background: #EF4444;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.7);
+            animation: mutantPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes mutantPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(239, 68, 68, 0.7); }
+            50% { transform: scale(1.3); box-shadow: 0 0 25px rgba(239, 68, 68, 0.9); }
+        }
+
+        /* Simulation Info */
+        .sim-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .sim-info {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .sim-stat {
+            background: rgba(255,255,255,0.05);
+            border-radius: var(--radius);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .sim-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .sim-stat-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.6);
+            margin-top: 0.25rem;
+        }
+
+        /* Chart Section */
+        .chart-container {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                padding: 2rem;
+            }
+        }
+
+        .chart-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .chart-canvas-wrapper {
+            position: relative;
+            height: 250px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-canvas-wrapper {
+                height: 300px;
+            }
+        }
+
+        /* Findings Cards */
+        .finding-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+        }
+
+        .finding-card h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .finding-card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        /* Tools Section */
+        .tool-card {
+            background: var(--bg-alt);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .tool-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .tool-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .tool-desc {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* Live Data Ticker */
+        .data-ticker {
+            display: flex;
+            gap: 2rem;
+            padding: 1rem 0;
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+        }
+
+        .ticker-value {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--secondary);
+        }
+
+        .ticker-change {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .ticker-change.up {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--secondary);
+        }
+
+        .ticker-change.down {
+            background: rgba(239, 68, 68, 0.2);
+            color: #EF4444;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">G6PD</div>
+                <span>G6PD Research</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="../about.html">About</a></li>
+                <li class="nav-dropdown">
+                    <a href="../research.html" class="dropdown-toggle active">
+                        Research <i data-lucide="chevron-down" style="width: 14px; height: 14px;"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="../research.html">Overview</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="alphafold.html">AlphaFold Analysis</a>
+                        <a href="molecular-dynamics.html" class="active">Molecular Dynamics</a>
+                        <a href="variants.html">Variant Database</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="crispr.html">CRISPR Therapeutics</a>
+                    </div>
+                </li>
+                <li><a href="literature.html">Literature</a></li>
+                <li><a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a></li>
+                <li><a href="../community.html">Contact</a></li>
+            </ul>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <i data-lucide="menu" style="width: 24px; height: 24px;"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="md-hero">
+        <div class="container" style="position: relative; z-index: 10;">
+            <a href="../research.html" style="color: rgba(255,255,255,0.6); display: inline-flex; align-items: center; gap: 6px; margin-bottom: 1rem; font-size: 0.9rem;">
+                <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
+                Back to Research
+            </a>
+            <span class="section-label" style="background: rgba(16, 185, 129, 0.2); color: var(--secondary);">Computational Research</span>
+            <h1 style="margin-top: 1rem; margin-bottom: 1rem;">Molecular Dynamics Simulations</h1>
+            <p style="color: rgba(255,255,255,0.8); font-size: 1.1rem; max-width: 600px;">
+                Running computational simulations to visualize how G6PD mutations affect
+                protein stability and dynamics at the atomic level.
+            </p>
+        </div>
+    </section>
+
+    <!-- Interactive Simulation -->
+    <section class="section section-dark">
+        <div class="container">
+            <div class="simulation-container">
+                <div class="simulation-header">
+                    <h3 class="simulation-title">
+                        <i data-lucide="activity" style="width: 20px; height: 20px;"></i>
+                        Live Simulation Visualization
+                    </h3>
+                    <div class="simulation-controls">
+                        <button class="sim-btn active" data-variant="wild">
+                            <i data-lucide="circle" style="width: 14px; height: 14px;"></i>
+                            Wild Type
+                        </button>
+                        <button class="sim-btn" data-variant="mutant">
+                            <i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i>
+                            S188F Mutant
+                        </button>
+                    </div>
+                </div>
+
+                <div class="simulation-canvas">
+                    <div class="protein-animation">
+                        <div class="protein-molecule" id="proteinMolecule">
+                            <div class="protein-core"></div>
+                            <div class="protein-orbit orbit-1"></div>
+                            <div class="protein-orbit orbit-2"></div>
+                            <div class="protein-orbit orbit-3"></div>
+                            <!-- Amino acids will be added by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Data Ticker -->
+                <div class="data-ticker" id="dataTicker">
+                    <div class="ticker-item">
+                        <span>RMSD:</span>
+                        <span class="ticker-value" id="rmsdValue">2.34 Å</span>
+                        <span class="ticker-change up">▲ 0.02</span>
+                    </div>
+                    <div class="ticker-item">
+                        <span>Temperature:</span>
+                        <span class="ticker-value">310 K</span>
+                    </div>
+                    <div class="ticker-item">
+                        <span>H-Bonds:</span>
+                        <span class="ticker-value" id="hbondsValue">342</span>
+                        <span class="ticker-change down">▼ 3</span>
+                    </div>
+                    <div class="ticker-item">
+                        <span>Time:</span>
+                        <span class="ticker-value" id="timeValue">45.2 ns</span>
+                    </div>
+                    <div class="ticker-item">
+                        <span>Energy:</span>
+                        <span class="ticker-value">-45,230 kJ/mol</span>
+                    </div>
+                </div>
+
+                <div class="sim-info">
+                    <div class="sim-stat">
+                        <div class="sim-stat-value">100</div>
+                        <div class="sim-stat-label">ns Simulation</div>
+                    </div>
+                    <div class="sim-stat">
+                        <div class="sim-stat-value">~8K</div>
+                        <div class="sim-stat-label">Atoms Tracked</div>
+                    </div>
+                    <div class="sim-stat">
+                        <div class="sim-stat-value">2</div>
+                        <div class="sim-stat-label">fs Timestep</div>
+                    </div>
+                    <div class="sim-stat">
+                        <div class="sim-stat-value">50M</div>
+                        <div class="sim-stat-label">Frames</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RMSD Chart -->
+    <section class="section">
+        <div class="container">
+            <div class="grid-2" style="gap: 2rem;">
+                <div class="chart-container fade-in">
+                    <div class="chart-header">
+                        <h3 class="chart-title">RMSD Over Time</h3>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: #10B981;"></div>
+                                Wild Type
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: #EF4444;"></div>
+                                Mediterranean
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="rmsdChart"></canvas>
+                    </div>
+                    <p style="color: var(--text-light); font-size: 0.85rem; margin-top: 1rem;">
+                        Root Mean Square Deviation (RMSD) measures how much the protein structure
+                        deviates from its starting configuration. Higher values indicate instability.
+                    </p>
+                </div>
+
+                <div class="chart-container fade-in">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Hydrogen Bonds</h3>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: #0066CC;"></div>
+                                H-bond count
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="hbondChart"></canvas>
+                    </div>
+                    <p style="color: var(--text-light); font-size: 0.85rem; margin-top: 1rem;">
+                        Hydrogen bonds are critical for protein stability. The S188F mutation
+                        disrupts key bonds at the dimer interface.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Findings -->
+    <section class="section section-alt">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Key Findings</span>
+                <h2 class="section-title">What the Simulations Reveal</h2>
+            </div>
+
+            <div class="grid-2">
+                <div class="finding-card fade-in" style="border-left-color: var(--secondary);">
+                    <h4>
+                        <i data-lucide="trending-up" style="width: 20px; height: 20px; color: var(--secondary);"></i>
+                        40% Higher RMSD in Mutants
+                    </h4>
+                    <p>
+                        Mediterranean variant (S188F) shows significantly higher structural deviation
+                        over 100ns, indicating reduced stability compared to wild-type enzyme.
+                    </p>
+                </div>
+
+                <div class="finding-card fade-in" style="border-left-color: #EF4444;">
+                    <h4>
+                        <i data-lucide="unlink" style="width: 20px; height: 20px; color: #EF4444;"></i>
+                        Disrupted Dimer Interface
+                    </h4>
+                    <p>
+                        The S188F mutation breaks critical hydrogen bonds at the dimer interface,
+                        weakening the quaternary structure essential for enzyme function.
+                    </p>
+                </div>
+
+                <div class="finding-card fade-in" style="border-left-color: #F59E0B;">
+                    <h4>
+                        <i data-lucide="zap" style="width: 20px; height: 20px; color: #F59E0B;"></i>
+                        Weakened NADP+ Binding
+                    </h4>
+                    <p>
+                        Class I mutations show increased flexibility in the NADP+ binding pocket,
+                        reducing cofactor affinity critical for enzyme stability.
+                    </p>
+                </div>
+
+                <div class="finding-card fade-in" style="border-left-color: var(--primary);">
+                    <h4>
+                        <i data-lucide="map" style="width: 20px; height: 20px; color: var(--primary);"></i>
+                        Flexibility Hotspots Identified
+                    </h4>
+                    <p>
+                        RMSF analysis reveals increased flexibility in catalytically important
+                        regions (residues 180-200) in mutant structures.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools & Methods -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Methodology</span>
+                <h2 class="section-title">Tools & Methods</h2>
+            </div>
+
+            <div class="grid-4">
+                <div class="tool-card fade-in">
+                    <div class="tool-icon">🔬</div>
+                    <div>
+                        <div class="tool-name">GROMACS 2023</div>
+                        <div class="tool-desc">MD simulation engine</div>
+                    </div>
+                </div>
+
+                <div class="tool-card fade-in">
+                    <div class="tool-icon">⚡</div>
+                    <div>
+                        <div class="tool-name">CHARMM36</div>
+                        <div class="tool-desc">Force field parameters</div>
+                    </div>
+                </div>
+
+                <div class="tool-card fade-in">
+                    <div class="tool-icon">🎨</div>
+                    <div>
+                        <div class="tool-name">VMD</div>
+                        <div class="tool-desc">Visualization software</div>
+                    </div>
+                </div>
+
+                <div class="tool-card fade-in">
+                    <div class="tool-icon">🐍</div>
+                    <div>
+                        <div class="tool-name">MDAnalysis</div>
+                        <div class="tool-desc">Python analysis toolkit</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section" style="background: var(--gradient-1); text-align: center;">
+        <div class="container-sm">
+            <h2 style="color: white; margin-bottom: 1rem;">Explore More Research</h2>
+            <p style="color: rgba(255,255,255,0.85); margin-bottom: 2rem;">
+                Continue exploring our computational approaches to G6PD research.
+            </p>
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+                <a href="alphafold.html" class="btn btn-outline btn-lg">
+                    <i data-lucide="box" style="width: 18px; height: 18px;"></i>
+                    AlphaFold Analysis
+                </a>
+                <a href="ml-discovery.html" class="btn btn-outline btn-lg">
+                    <i data-lucide="brain" style="width: 18px; height: 18px;"></i>
+                    ML Drug Discovery
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div>
+                <div class="footer-brand">
+                    <div class="logo-icon">G6PD</div>
+                    <span style="font-weight: 700;">G6PD Research</span>
+                </div>
+                <p class="footer-description">
+                    Advancing G6PD deficiency research through computational biology.
+                </p>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Research</h4>
+                <ul class="footer-links">
+                    <li><a href="alphafold.html">AlphaFold</a></li>
+                    <li><a href="molecular-dynamics.html">Molecular Dynamics</a></li>
+                    <li><a href="variants.html">Variant Database</a></li>
+                    <li><a href="crispr.html">CRISPR</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Connect</h4>
+                <ul class="footer-links">
+                    <li><a href="../about.html">About Luke</a></li>
+                    <li><a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a></li>
+                    <li><a href="../community.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2024 G6PD Research Initiative by Luke Chen. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Navigation scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileNav = document.getElementById('mobileNav');
+        if (mobileMenuBtn && mobileNav) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileNav.classList.toggle('active');
+            });
+        }
+
+        // Create amino acids for animation
+        const proteinMolecule = document.getElementById('proteinMolecule');
+        const numAminoAcids = 12;
+        for (let i = 0; i < numAminoAcids; i++) {
+            const aa = document.createElement('div');
+            aa.className = 'amino-acid';
+            const angle = (i / numAminoAcids) * Math.PI * 2;
+            const radius = 60 + Math.random() * 80;
+            aa.style.left = `calc(50% + ${Math.cos(angle) * radius}px - 6px)`;
+            aa.style.top = `calc(50% + ${Math.sin(angle) * radius}px - 6px)`;
+            aa.style.animationDelay = `${i * 0.2}s`;
+            proteinMolecule.appendChild(aa);
+        }
+
+        // Simulation variant toggle
+        const simBtns = document.querySelectorAll('.sim-btn');
+        simBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                simBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                const variant = this.getAttribute('data-variant');
+                const aminoAcids = document.querySelectorAll('.amino-acid');
+
+                if (variant === 'mutant') {
+                    // Show mutant state - make some amino acids red and pulsing
+                    aminoAcids.forEach((aa, i) => {
+                        if (i % 3 === 0) {
+                            aa.classList.add('mutant');
+                        }
+                    });
+                    document.getElementById('rmsdValue').textContent = '3.87 Å';
+                    document.getElementById('hbondsValue').textContent = '298';
+                } else {
+                    // Show wild type
+                    aminoAcids.forEach(aa => {
+                        aa.classList.remove('mutant');
+                    });
+                    document.getElementById('rmsdValue').textContent = '2.34 Å';
+                    document.getElementById('hbondsValue').textContent = '342';
+                }
+            });
+        });
+
+        // Live data ticker animation
+        let simulationTime = 45.2;
+        setInterval(() => {
+            simulationTime += 0.1;
+            if (simulationTime > 100) simulationTime = 0;
+            document.getElementById('timeValue').textContent = simulationTime.toFixed(1) + ' ns';
+        }, 100);
+
+        // RMSD Chart
+        const rmsdCtx = document.getElementById('rmsdChart').getContext('2d');
+        const rmsdData = {
+            labels: Array.from({length: 21}, (_, i) => i * 5),
+            datasets: [
+                {
+                    label: 'Wild Type',
+                    data: [0, 1.2, 1.8, 2.1, 2.3, 2.4, 2.35, 2.4, 2.38, 2.42, 2.4, 2.45, 2.43, 2.41, 2.44, 2.42, 2.45, 2.43, 2.44, 2.42, 2.45],
+                    borderColor: '#10B981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                },
+                {
+                    label: 'Mediterranean',
+                    data: [0, 1.5, 2.4, 3.0, 3.4, 3.6, 3.7, 3.75, 3.8, 3.85, 3.88, 3.9, 3.85, 3.92, 3.88, 3.95, 3.9, 3.93, 3.88, 3.92, 3.9],
+                    borderColor: '#EF4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                }
+            ]
+        };
+
+        new Chart(rmsdCtx, {
+            type: 'line',
+            data: rmsdData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Time (ns)' },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    y: {
+                        title: { display: true, text: 'RMSD (Å)' },
+                        min: 0,
+                        max: 5,
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    }
+                }
+            }
+        });
+
+        // H-bond Chart
+        const hbondCtx = document.getElementById('hbondChart').getContext('2d');
+        const hbondData = {
+            labels: Array.from({length: 21}, (_, i) => i * 5),
+            datasets: [
+                {
+                    label: 'Hydrogen Bonds',
+                    data: [350, 348, 345, 342, 340, 338, 335, 332, 330, 328, 325, 322, 320, 318, 315, 312, 310, 308, 305, 302, 298],
+                    borderColor: '#0066CC',
+                    backgroundColor: 'rgba(0, 102, 204, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                }
+            ]
+        };
+
+        new Chart(hbondCtx, {
+            type: 'line',
+            data: hbondData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Time (ns)' },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    y: {
+                        title: { display: true, text: 'H-bond Count' },
+                        min: 250,
+                        max: 360,
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    }
+                }
+            }
+        });
+
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

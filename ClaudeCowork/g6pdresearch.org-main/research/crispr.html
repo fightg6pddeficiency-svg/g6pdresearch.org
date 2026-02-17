@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRISPR Therapeutics | G6PD Research</title>
+    <meta name="description" content="Exploring gene editing approaches for treating G6PD deficiency, including CRISPR-Cas9 and base editing strategies.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Shared Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <style>
+        .crispr-hero {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%);
+            padding: 120px 1rem 60px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .crispr-hero {
+                padding: 150px 2rem 80px;
+            }
+        }
+
+        .dna-helix {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+        }
+
+        .helix-strand {
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: helixWave 3s ease-in-out infinite;
+        }
+
+        @keyframes helixWave {
+            0%, 100% { transform: translateX(-50%) scaleY(1); }
+            50% { transform: translateX(0%) scaleY(2); }
+        }
+
+        .gene-editor {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            margin-top: -40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        @media (min-width: 768px) {
+            .gene-editor {
+                padding: 2rem;
+            }
+        }
+
+        .sequence-display {
+            background: #1f2937;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            overflow-x: auto;
+        }
+
+        .sequence-row {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 8px;
+            flex-wrap: nowrap;
+        }
+
+        .nucleotide {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .nt-A { background: #fecaca; color: #991b1b; }
+        .nt-T { background: #bbf7d0; color: #166534; }
+        .nt-G { background: #fef08a; color: #854d0e; }
+        .nt-C { background: #bfdbfe; color: #1e40af; }
+
+        .nucleotide.mutant {
+            animation: pulse 1s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+
+        .nucleotide.corrected {
+            animation: correct 0.5s ease-out forwards;
+        }
+
+        @keyframes correct {
+            0% { transform: scale(1.5); }
+            100% { transform: scale(1); background: #bbf7d0; color: #166534; }
+        }
+
+        .sequence-label {
+            color: #9ca3af;
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+        }
+
+        .edit-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .approach-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+            height: 100%;
+        }
+
+        .approach-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .pros-cons {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .pros, .cons {
+            padding: 1rem;
+            border-radius: var(--radius);
+        }
+
+        .pros {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+        }
+
+        .cons {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+
+        .pros h5, .cons h5 {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 0.75rem;
+        }
+
+        .pros h5 { color: #166534; }
+        .cons h5 { color: #991b1b; }
+
+        .pros ul, .cons ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .pros li, .cons li {
+            padding: 4px 0;
+        }
+
+        .timeline-vertical {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline-vertical::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #dc2626, #f97316, #22c55e);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -2rem;
+            top: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #dc2626;
+        }
+
+        .timeline-item:nth-child(2) .timeline-dot { border-color: #f97316; }
+        .timeline-item:nth-child(3) .timeline-dot { border-color: #eab308; }
+        .timeline-item:nth-child(4) .timeline-dot { border-color: #22c55e; }
+
+        .cas-animation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #fef2f2 0%, #fff7ed 100%);
+            border-radius: var(--radius);
+        }
+
+        @media (min-width: 768px) {
+            .cas-animation {
+                flex-direction: row;
+                justify-content: center;
+            }
+        }
+
+        .cas-protein {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            animation: casBounce 2s ease-in-out infinite;
+            position: relative;
+        }
+
+        .cas-protein::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 12px solid #b91c1c;
+        }
+
+        @keyframes casBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .guide-rna {
+            width: 150px;
+            height: 30px;
+            background: linear-gradient(90deg, #f97316, #fb923c);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .dna-target {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .dna-strand-visual {
+            display: flex;
+            gap: 2px;
+        }
+
+        .bp {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .target-site {
+            animation: targetGlow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes targetGlow {
+            0%, 100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.5); }
+            50% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.8); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="logo">
+                <div class="logo-icon">G6PD</div>
+                <span>G6PD Research</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="../about.html">About</a></li>
+                <li class="nav-dropdown">
+                    <a href="../research.html" class="dropdown-toggle active">
+                        Research <i data-lucide="chevron-down" style="width: 14px; height: 14px;"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="../research.html">Overview</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="alphafold.html">AlphaFold Analysis</a>
+                        <a href="molecular-dynamics.html">Molecular Dynamics</a>
+                        <a href="variants.html">Variant Database</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="crispr.html" class="active">CRISPR Therapeutics</a>
+                    </div>
+                </li>
+                <li><a href="literature.html">Literature</a></li>
+                <li><a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a></li>
+                <li><a href="../community.html">Contact</a></li>
+            </ul>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <i data-lucide="menu" style="width: 24px; height: 24px;"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <a href="../about.html">About</a>
+        <a href="../research.html">Research</a>
+        <a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a>
+        <a href="../community.html">Contact</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="crispr-hero">
+        <div class="dna-helix">
+            <div class="helix-strand" style="top: 20%; animation-delay: 0s;"></div>
+            <div class="helix-strand" style="top: 40%; animation-delay: 0.5s;"></div>
+            <div class="helix-strand" style="top: 60%; animation-delay: 1s;"></div>
+            <div class="helix-strand" style="top: 80%; animation-delay: 1.5s;"></div>
+        </div>
+        <div class="container" style="position: relative; z-index: 1;">
+            <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 1rem;">
+                CRISPR Gene Therapy
+            </h1>
+            <p style="font-size: 1.1rem; opacity: 0.9; max-width: 600px;">
+                Investigating gene editing approaches to correct G6PD mutations
+                and potentially cure G6PD deficiency at its genetic source.
+            </p>
+        </div>
+    </section>
+
+    <!-- Interactive Gene Editor -->
+    <section class="section">
+        <div class="container">
+            <div class="gene-editor fade-in">
+                <h3 style="margin-bottom: 1.5rem; text-align: center;">Interactive Gene Editor</h3>
+                <p style="text-align: center; color: var(--text-light); margin-bottom: 1.5rem;">
+                    Simulating correction of the G6PD Mediterranean (S188F) mutation
+                </p>
+
+                <div class="sequence-display">
+                    <div class="sequence-label">Wild Type Sequence (Codon 188)</div>
+                    <div class="sequence-row" id="wildType">
+                        <!-- Will be populated by JS -->
+                    </div>
+
+                    <div class="sequence-label" style="margin-top: 1rem;">Mutant Sequence (S188F)</div>
+                    <div class="sequence-row" id="mutantSeq">
+                        <!-- Will be populated by JS -->
+                    </div>
+
+                    <div class="sequence-label" style="margin-top: 1rem;">Amino Acid</div>
+                    <div style="display: flex; gap: 1rem; color: white;">
+                        <span>Wild: <strong style="color: #34d399;">Serine (S)</strong></span>
+                        <span>Mutant: <strong id="mutantAA" style="color: #f87171;">Phenylalanine (F)</strong></span>
+                    </div>
+                </div>
+
+                <div class="edit-controls">
+                    <button class="btn btn-primary" onclick="performEdit()">
+                        <i data-lucide="scissors" style="width: 16px; height: 16px;"></i>
+                        Apply CRISPR Edit
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetSequence()">
+                        <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i>
+                        Reset
+                    </button>
+                    <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 0.9rem; color: var(--text-light);">Status:</span>
+                        <span id="editStatus" style="font-weight: 600; color: #f97316;">Ready</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CRISPR Mechanism -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title fade-in">How CRISPR-Cas9 Works</h2>
+            <p class="section-subtitle fade-in">
+                The molecular scissors that enable precise genome editing
+            </p>
+
+            <div class="cas-animation fade-in" style="margin-top: 2rem;">
+                <div class="cas-protein">Cas9</div>
+                <div style="text-align: center;">
+                    <div class="guide-rna">Guide RNA</div>
+                    <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 0.5rem;">
+                        Targets specific DNA sequence
+                    </p>
+                </div>
+                <div class="dna-target">
+                    <div class="dna-strand-visual">
+                        <div class="bp nt-A">A</div>
+                        <div class="bp nt-T">T</div>
+                        <div class="bp nt-G">G</div>
+                        <div class="bp nt-C target-site">C</div>
+                        <div class="bp nt-A target-site">A</div>
+                        <div class="bp nt-T target-site">T</div>
+                        <div class="bp nt-G">G</div>
+                        <div class="bp nt-C">C</div>
+                    </div>
+                    <div class="dna-strand-visual">
+                        <div class="bp nt-T">T</div>
+                        <div class="bp nt-A">A</div>
+                        <div class="bp nt-C">C</div>
+                        <div class="bp nt-G target-site">G</div>
+                        <div class="bp nt-T target-site">T</div>
+                        <div class="bp nt-A target-site">A</div>
+                        <div class="bp nt-C">C</div>
+                        <div class="bp nt-G">G</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Editing Approaches -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">Gene Editing Approaches</h2>
+            <p class="section-subtitle fade-in">
+                Multiple strategies for correcting G6PD mutations
+            </p>
+
+            <div class="grid-3 fade-in" style="margin-top: 2rem;">
+                <div class="approach-card">
+                    <div class="approach-icon" style="background: linear-gradient(135deg, #dc2626, #b91c1c);">
+                        <i data-lucide="scissors" style="width: 28px; height: 28px; color: white;"></i>
+                    </div>
+                    <h3>CRISPR-Cas9</h3>
+                    <p style="color: var(--text-light); margin: 1rem 0;">
+                        Creates double-strand breaks for gene knockout or HDR-mediated correction.
+                    </p>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5><i data-lucide="check" style="width: 14px; height: 14px;"></i> Pros</h5>
+                            <ul>
+                                <li>• Well-established</li>
+                                <li>• High efficiency</li>
+                                <li>• Versatile applications</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5><i data-lucide="x" style="width: 14px; height: 14px;"></i> Cons</h5>
+                            <ul>
+                                <li>• Off-target effects</li>
+                                <li>• DSB-related risks</li>
+                                <li>• Delivery challenges</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="approach-card">
+                    <div class="approach-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                        <i data-lucide="pencil" style="width: 28px; height: 28px; color: white;"></i>
+                    </div>
+                    <h3>Base Editing</h3>
+                    <p style="color: var(--text-light); margin: 1rem 0;">
+                        Directly converts one base to another without double-strand breaks.
+                    </p>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5><i data-lucide="check" style="width: 14px; height: 14px;"></i> Pros</h5>
+                            <ul>
+                                <li>• No DSBs</li>
+                                <li>• Precise single-base</li>
+                                <li>• Lower off-targets</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5><i data-lucide="x" style="width: 14px; height: 14px;"></i> Cons</h5>
+                            <ul>
+                                <li>• Limited to C→T, A→G</li>
+                                <li>• Bystander editing</li>
+                                <li>• Size constraints</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="approach-card">
+                    <div class="approach-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                        <i data-lucide="replace" style="width: 28px; height: 28px; color: white;"></i>
+                    </div>
+                    <h3>Prime Editing</h3>
+                    <p style="color: var(--text-light); margin: 1rem 0;">
+                        "Search and replace" editing that can make any substitution or small indels.
+                    </p>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h5><i data-lucide="check" style="width: 14px; height: 14px;"></i> Pros</h5>
+                            <ul>
+                                <li>• All 12 transitions</li>
+                                <li>• No DSBs or donors</li>
+                                <li>• Highly precise</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h5><i data-lucide="x" style="width: 14px; height: 14px;"></i> Cons</h5>
+                            <ul>
+                                <li>• Lower efficiency</li>
+                                <li>• Large cargo size</li>
+                                <li>• Still emerging</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Research Timeline -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title fade-in">Research Roadmap</h2>
+            <p class="section-subtitle fade-in">
+                Path from laboratory research to potential clinical application
+            </p>
+
+            <div class="grid-2 fade-in" style="margin-top: 2rem; gap: 3rem;">
+                <div class="timeline-vertical">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <strong style="color: #dc2626;">Phase 1: Target Design</strong>
+                        <p style="color: var(--text-light); font-size: 0.9rem; margin-top: 0.5rem;">
+                            Design guide RNAs targeting common G6PD mutations. Computational prediction
+                            of off-target sites using Cas-OFFinder and CRISPOR.
+                        </p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <strong style="color: #f97316;">Phase 2: In Vitro Testing</strong>
+                        <p style="color: var(--text-light); font-size: 0.9rem; margin-top: 0.5rem;">
+                            Test editing efficiency in patient-derived cells. Validate correction
+                            of enzyme activity using G6PD activity assays.
+                        </p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <strong style="color: #eab308;">Phase 3: Delivery Optimization</strong>
+                        <p style="color: var(--text-light); font-size: 0.9rem; margin-top: 0.5rem;">
+                            Develop LNP or viral delivery systems for hematopoietic stem cells.
+                            Optimize for bone marrow targeting.
+                        </p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <strong style="color: #22c55e;">Phase 4: Preclinical Studies</strong>
+                        <p style="color: var(--text-light); font-size: 0.9rem; margin-top: 0.5rem;">
+                            Animal model studies to assess safety, biodistribution, and long-term
+                            efficacy of gene correction.
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="card" style="margin-bottom: 1.5rem;">
+                        <h4 style="margin-bottom: 1rem;">Key Challenges</h4>
+                        <ul style="color: var(--text-light); line-height: 2;">
+                            <li><strong>Delivery:</strong> Efficiently reaching hematopoietic stem cells</li>
+                            <li><strong>Specificity:</strong> Avoiding off-target genome modifications</li>
+                            <li><strong>Durability:</strong> Ensuring long-term correction in self-renewing cells</li>
+                            <li><strong>Safety:</strong> Minimizing immunogenicity and genotoxicity</li>
+                            <li><strong>Scalability:</strong> Manufacturing for clinical application</li>
+                        </ul>
+                    </div>
+
+                    <div class="card" style="background: linear-gradient(135deg, #fef2f2, #fff7ed);">
+                        <h4 style="margin-bottom: 1rem; color: #dc2626;">
+                            <i data-lucide="alert-circle" style="width: 20px; height: 20px; display: inline;"></i>
+                            Ethical Considerations
+                        </h4>
+                        <p style="color: var(--text-light); font-size: 0.9rem;">
+                            Gene therapy for G6PD raises important bioethical questions about
+                            germline editing, access equity, and informed consent. My research
+                            includes studying these ethical frameworks alongside the science.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Current Research -->
+    <section class="section">
+        <div class="container-sm">
+            <h2 class="section-title fade-in">My Current Work</h2>
+
+            <div class="card fade-in" style="margin-top: 2rem;">
+                <h3 style="margin-bottom: 1rem;">Computational Guide RNA Design</h3>
+                <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                    I'm currently using computational tools to design and evaluate guide RNAs
+                    for correcting the G6PD Mediterranean mutation using base editing.
+                </p>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                    <div style="padding: 1rem; background: var(--bg-alt); border-radius: var(--radius); text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">47</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">Guides Designed</div>
+                    </div>
+                    <div style="padding: 1rem; background: var(--bg-alt); border-radius: var(--radius); text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">12</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">High-Specificity</div>
+                    </div>
+                    <div style="padding: 1rem; background: var(--bg-alt); border-radius: var(--radius); text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">3</div>
+                        <div style="font-size: 0.85rem; color: var(--text-light);">Top Candidates</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div>
+                <div class="footer-brand">
+                    <div class="logo-icon">G6PD</div>
+                    <span style="font-weight: 700;">G6PD Research</span>
+                </div>
+                <p class="footer-description">
+                    Advancing G6PD deficiency research through computational biology
+                    and emerging therapeutics.
+                </p>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Research</h4>
+                <ul class="footer-links">
+                    <li><a href="alphafold.html">AlphaFold</a></li>
+                    <li><a href="molecular-dynamics.html">Molecular Dynamics</a></li>
+                    <li><a href="variants.html">Variant Database</a></li>
+                    <li><a href="crispr.html">CRISPR</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Connect</h4>
+                <ul class="footer-links">
+                    <li><a href="../about.html">About Luke</a></li>
+                    <li><a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a></li>
+                    <li><a href="../community.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2024 G6PD Research Initiative by Luke Chen. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Navigation
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileNav = document.getElementById('mobileNav');
+        mobileMenuBtn.addEventListener('click', () => mobileNav.classList.toggle('active'));
+
+        // Animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Gene Editor
+        const wildTypeSeq = ['T', 'C', 'C', 'A', 'G', 'C', 'T', 'A', 'C', 'G', 'T', 'G'];
+        const mutantSeq = ['T', 'C', 'C', 'T', 'T', 'C', 'T', 'A', 'C', 'G', 'T', 'G'];
+        // Position 3-5 is the codon: AGC (Ser) vs TTC (Phe)
+
+        function renderSequence(containerId, sequence, highlightMutant = false) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            sequence.forEach((nt, i) => {
+                const el = document.createElement('div');
+                el.className = `nucleotide nt-${nt}`;
+                el.textContent = nt;
+                if (highlightMutant && i >= 3 && i <= 5) {
+                    el.classList.add('mutant');
+                }
+                el.id = `${containerId}-${i}`;
+                container.appendChild(el);
+            });
+        }
+
+        function initSequences() {
+            renderSequence('wildType', wildTypeSeq);
+            renderSequence('mutantSeq', mutantSeq, true);
+        }
+
+        function performEdit() {
+            const status = document.getElementById('editStatus');
+            status.textContent = 'Editing...';
+            status.style.color = '#f59e0b';
+
+            // Animate the correction
+            setTimeout(() => {
+                const positions = [3, 4, 5];
+                positions.forEach((pos, idx) => {
+                    setTimeout(() => {
+                        const el = document.getElementById(`mutantSeq-${pos}`);
+                        el.classList.remove('mutant');
+                        el.classList.add('corrected');
+                        el.textContent = wildTypeSeq[pos];
+                        el.className = `nucleotide nt-${wildTypeSeq[pos]} corrected`;
+                    }, idx * 300);
+                });
+
+                setTimeout(() => {
+                    status.textContent = 'Corrected!';
+                    status.style.color = '#10b981';
+                    document.getElementById('mutantAA').textContent = 'Serine (S)';
+                    document.getElementById('mutantAA').style.color = '#34d399';
+                }, 1000);
+            }, 500);
+        }
+
+        function resetSequence() {
+            initSequences();
+            document.getElementById('editStatus').textContent = 'Ready';
+            document.getElementById('editStatus').style.color = '#f97316';
+            document.getElementById('mutantAA').textContent = 'Phenylalanine (F)';
+            document.getElementById('mutantAA').style.color = '#f87171';
+        }
+
+        // Initialize
+        initSequences();
+    </script>
+</body>
+</html>

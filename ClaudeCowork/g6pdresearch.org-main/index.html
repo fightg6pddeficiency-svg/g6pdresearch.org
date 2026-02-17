@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G6PD Research Initiative | Luke Chen</title>
+    <meta name="description" content="Advancing G6PD deficiency research through computational biology, AlphaFold protein analysis, and CRISPR-Cas9 therapeutic exploration.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- 3Dmol.js for protein visualization -->
+    <script src="https://3dmol.org/build/3Dmol-min.js"></script>
+
+    <!-- Shared Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <style>
+        /* Home Page Specific Styles */
+        .hero-3d-container {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50%;
+            height: 80%;
+            opacity: 0.4;
+            display: none;
+        }
+
+        @media (min-width: 1024px) {
+            .hero-3d-container {
+                display: block;
+            }
+        }
+
+        .floating-molecules {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .molecule {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .molecule:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .molecule:nth-child(2) { top: 20%; right: 15%; animation-delay: -5s; }
+        .molecule:nth-child(3) { bottom: 30%; left: 20%; animation-delay: -10s; }
+        .molecule:nth-child(4) { top: 40%; left: 5%; animation-delay: -15s; }
+        .molecule:nth-child(5) { bottom: 20%; right: 25%; animation-delay: -7s; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(20px, -20px) rotate(5deg); }
+            50% { transform: translate(0, -40px) rotate(0deg); }
+            75% { transform: translate(-20px, -20px) rotate(-5deg); }
+        }
+
+        /* Video Grid Responsive */
+        @media (max-width: 768px) {
+            .video-grid-home {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        /* Research Grid */
+        .research-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .research-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .research-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .research-card-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-1);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .research-card-new {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .research-card-new:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary);
+        }
+
+        .research-card-new:hover .research-card-icon {
+            transform: scale(1.1);
+        }
+
+        .research-card-icon {
+            transition: var(--transition);
+        }
+
+        /* Interactive Protein Section */
+        .protein-section {
+            background: var(--bg-dark);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .protein-viewer-wrapper {
+            position: relative;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            background: #000;
+        }
+
+        .variant-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .variant-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: var(--radius);
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .variant-btn:hover,
+        .variant-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Stats Animation */
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @media (min-width: 768px) {
+            .stat-value {
+                font-size: 3.5rem;
+            }
+        }
+
+        .stat-label {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: var(--gradient-1);
+            text-align: center;
+            padding: 4rem 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .cta-section {
+                padding: 6rem 2rem;
+            }
+        }
+
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar" class="dark">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">G6PD</div>
+                <span>G6PD Research</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="about.html">About</a></li>
+                <li class="nav-dropdown">
+                    <a href="research.html" class="dropdown-toggle">
+                        Research <i data-lucide="chevron-down" style="width: 14px; height: 14px;"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="research.html">Overview</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="research/alphafold.html">AlphaFold Analysis</a>
+                        <a href="research/molecular-dynamics.html">Molecular Dynamics</a>
+                        <a href="research/variants.html">Variant Database</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="research/crispr.html">CRISPR Therapeutics</a>
+                    </div>
+                </li>
+                <li><a href="research/literature.html">Literature</a></li>
+                <li><a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a></li>
+                <li><a href="community.html">Contact</a></li>
+            </ul>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <i data-lucide="menu" style="width: 24px; height: 24px;"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <a href="about.html">About</a>
+        <a href="research.html">Research</a>
+        <a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a>
+        <a href="community.html">Contact</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+
+        <!-- Floating Molecules Background -->
+        <div class="floating-molecules">
+            <div class="molecule">🧬</div>
+            <div class="molecule">⚗️</div>
+            <div class="molecule">🔬</div>
+            <div class="molecule">💊</div>
+            <div class="molecule">🧪</div>
+        </div>
+
+        <!-- 3D Protein Background -->
+        <div class="hero-3d-container" id="hero3d"></div>
+
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i data-lucide="sparkles" style="width: 18px; height: 18px;"></i>
+                Research Initiative by <strong style="color: #fff; font-weight: 800;">Luke Chen</strong>
+            </div>
+
+            <h1>Advancing G6PD<br/>Deficiency Research</h1>
+
+            <p class="hero-subtitle">
+                Exploring computational biology approaches to understand and potentially cure
+                the world's most common enzyme deficiency.
+            </p>
+
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-value" data-count="400" data-suffix="M+">0</div>
+                    <div class="hero-stat-label">Million Affected</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value" data-count="217" data-suffix="+">0</div>
+                    <div class="hero-stat-label">Known Variants</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value" data-count="0" data-suffix="">0</div>
+                    <div class="hero-stat-label">Available Cures</div>
+                </div>
+            </div>
+
+            <div class="hero-buttons">
+                <a href="research.html" class="btn btn-primary btn-lg">
+                    <i data-lucide="microscope" style="width: 20px; height: 20px;"></i>
+                    Explore Research
+                </a>
+                <a href="about.html" class="btn btn-outline btn-lg">
+                    Learn My Story
+                </a>
+            </div>
+        </div>
+
+        <div class="scroll-indicator">
+            <span>Scroll to explore</span>
+            <i data-lucide="chevron-down" style="width: 20px; height: 20px;"></i>
+        </div>
+    </section>
+
+    <!-- G6PD Educational Videos -->
+    <section class="section" style="background: #0F172A; color: white; padding-top: 4rem; padding-bottom: 4rem;">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label" style="color: #10B981;">Educational Videos</span>
+                <h2 class="section-title" style="color: white;">G6PD Deficiency — Video Review</h2>
+                <p class="section-description" style="color: rgba(255,255,255,0.7);">
+                    Comprehensive two-part video series covering G6PD deficiency pathophysiology, diagnosis, and clinical management
+                </p>
+            </div>
+
+            <div class="video-grid-home" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 1100px; margin: 0 auto;">
+                <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1.5rem;">
+                    <h3 style="color: #10B981; font-size: 1.05rem; margin-bottom: 1rem;">Part 1 — Pathophysiology & Biochemistry</h3>
+                    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px;">
+                        <iframe src="https://www.youtube.com/embed/SuskNgFO_-8" title="G6PD Review Part 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+                    </div>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1.5rem;">
+                    <h3 style="color: #10B981; font-size: 1.05rem; margin-bottom: 1rem;">Part 2 — Diagnosis & Clinical Management</h3>
+                    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px;">
+                        <iframe src="https://www.youtube.com/embed/1XUoxbuJ7IU" title="G6PD Review Part 2" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Protein Section -->
+    <section class="protein-section section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Interactive Visualization</span>
+                <h2 class="section-title" style="color: white;">G6PD Protein Structure</h2>
+                <p class="section-description">
+                    Explore the 3D structure of Glucose-6-phosphate dehydrogenase predicted by AlphaFold
+                </p>
+            </div>
+
+            <div class="grid-2" style="align-items: center;">
+                <div class="protein-viewer-wrapper">
+                    <div id="proteinViewer" style="width: 100%; height: 400px;"></div>
+                    <div class="variant-selector">
+                        <button class="variant-btn active" data-variant="wild">Wild Type</button>
+                        <button class="variant-btn" data-variant="mediterranean">Mediterranean</button>
+                        <button class="variant-btn" data-variant="african">A- (African)</button>
+                    </div>
+                </div>
+
+                <div style="color: white;">
+                    <h3 style="color: white; margin-bottom: 1rem;">Understanding G6PD Structure</h3>
+                    <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem;">
+                        G6PD is a homodimeric enzyme that catalyzes the first step of the pentose
+                        phosphate pathway. The protein consists of 515 amino acids and requires
+                        NADP+ as a structural cofactor for stability.
+                    </p>
+
+                    <div class="grid-2" style="gap: 1rem;">
+                        <div class="stat-card">
+                            <div class="stat-value">515</div>
+                            <div class="stat-label">Amino Acids</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">59</div>
+                            <div class="stat-label">kDa Molecular Weight</div>
+                        </div>
+                    </div>
+
+                    <a href="research/alphafold.html" class="btn btn-primary mt-3">
+                        <i data-lucide="box" style="width: 18px; height: 18px;"></i>
+                        Deep Dive into Structure
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Research Areas -->
+    <section class="section section-alt">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Research Areas</span>
+                <h2 class="section-title">Exploring Multiple Fronts</h2>
+                <p class="section-description">
+                    A comprehensive computational approach to understanding and treating G6PD deficiency
+                </p>
+            </div>
+
+            <div class="research-grid">
+                <a href="research/alphafold.html" class="research-card-new fade-in">
+                    <div class="research-card-icon">
+                        <i data-lucide="box" style="width: 28px; height: 28px;"></i>
+                    </div>
+                    <h3 style="margin-bottom: 0.5rem;">AlphaFold Analysis</h3>
+                    <p style="color: var(--text-light); font-size: 0.95rem;">
+                        3D protein structure prediction and variant impact analysis
+                    </p>
+                </a>
+
+                <a href="research/crispr.html" class="research-card-new fade-in">
+                    <div class="research-card-icon" style="background: linear-gradient(135deg, #10B981 0%, #14B8A6 100%);">
+                        <i data-lucide="scissors" style="width: 28px; height: 28px;"></i>
+                    </div>
+                    <h3 style="margin-bottom: 0.5rem;">CRISPR Therapeutics</h3>
+                    <p style="color: var(--text-light); font-size: 0.95rem;">
+                        Gene editing approaches for potential cure
+                    </p>
+                </a>
+
+                <a href="research/variants.html" class="research-card-new fade-in">
+                    <div class="research-card-icon" style="background: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);">
+                        <i data-lucide="database" style="width: 28px; height: 28px;"></i>
+                    </div>
+                    <h3 style="margin-bottom: 0.5rem;">Variant Database</h3>
+                    <p style="color: var(--text-light); font-size: 0.95rem;">
+                        Comprehensive mapping of 217+ known G6PD mutations
+                    </p>
+                </a>
+
+                <a href="research/molecular-dynamics.html" class="research-card-new fade-in">
+                    <div class="research-card-icon" style="background: var(--gradient-2);">
+                        <i data-lucide="activity" style="width: 28px; height: 28px;"></i>
+                    </div>
+                    <h3 style="margin-bottom: 0.5rem;">Molecular Dynamics</h3>
+                    <p style="color: var(--text-light); font-size: 0.95rem;">
+                        Simulating protein behavior and mutation effects over time
+                    </p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- G6PD.ai Section -->
+    <section class="section">
+        <div class="container">
+            <div class="grid-2" style="align-items: center; gap: 3rem;">
+                <div class="fade-in slide-in-left">
+                    <span class="section-label">Live Product</span>
+                    <h2 style="margin-bottom: 1rem;">G6PD.ai Safety Checker</h2>
+                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                        The world's first AI-powered safety checker for G6PD patients.
+                        Instantly check if medications, foods, or chemicals are safe based
+                        on the latest medical research.
+                    </p>
+                    <ul style="list-style: none; margin-bottom: 2rem;">
+                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.75rem;">
+                            <i data-lucide="check-circle" style="width: 20px; height: 20px; color: var(--secondary);"></i>
+                            <span>10,000+ substances in database</span>
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.75rem;">
+                            <i data-lucide="check-circle" style="width: 20px; height: 20px; color: var(--secondary);"></i>
+                            <span>Evidence-based risk assessments</span>
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.75rem;">
+                            <i data-lucide="check-circle" style="width: 20px; height: 20px; color: var(--secondary);"></i>
+                            <span>Free for all G6PD patients</span>
+                        </li>
+                    </ul>
+                    <a href="https://www.g6pd.ai" target="_blank" class="btn btn-primary btn-lg">
+                        <i data-lucide="external-link" style="width: 18px; height: 18px;"></i>
+                        Try G6PD.ai
+                    </a>
+                </div>
+
+                <div class="fade-in slide-in-right">
+                    <div style="background: var(--gradient-1); border-radius: var(--radius-xl); padding: 2rem; text-align: center;">
+                        <div style="background: white; border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 1rem;">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">🛡️</div>
+                            <h3 style="margin-bottom: 0.5rem;">Is it safe?</h3>
+                            <p style="color: var(--text-light); font-size: 0.9rem;">
+                                Check any medication or food instantly
+                            </p>
+                        </div>
+                        <p style="color: white; font-size: 0.9rem;">
+                            Powered by AI • Updated daily
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container-sm">
+            <h2>Join the Research Journey</h2>
+            <p>
+                Stay updated on the latest G6PD research breakthroughs and contribute
+                to advancing our understanding of this condition.
+            </p>
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+                <a href="community.html" class="btn btn-outline btn-lg">
+                    <i data-lucide="mail" style="width: 18px; height: 18px;"></i>
+                    Get Updates
+                </a>
+                <a href="about.html" class="btn btn-outline btn-lg">
+                    <i data-lucide="user" style="width: 18px; height: 18px;"></i>
+                    About Luke
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div>
+                <div class="footer-brand">
+                    <div class="logo-icon">G6PD</div>
+                    <span style="font-weight: 700;">G6PD Research</span>
+                </div>
+                <p class="footer-description">
+                    Advancing G6PD deficiency research through computational biology
+                    and emerging therapeutics.
+                </p>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Research</h4>
+                <ul class="footer-links">
+                    <li><a href="research/alphafold.html">AlphaFold</a></li>
+                    <li><a href="research/molecular-dynamics.html">Molecular Dynamics</a></li>
+                    <li><a href="research/variants.html">Variant Database</a></li>
+                    <li><a href="research/crispr.html">CRISPR</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Connect</h4>
+                <ul class="footer-links">
+                    <li><a href="about.html">About Luke</a></li>
+                    <li><a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a></li>
+                    <li><a href="community.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 G6PD Research Initiative by Luke Chen. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Navigation scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+                navbar.classList.remove('dark');
+            } else {
+                navbar.classList.remove('scrolled');
+                navbar.classList.add('dark');
+            }
+        });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileNav = document.getElementById('mobileNav');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileNav.classList.toggle('active');
+        });
+
+        // Animated counter
+        const counters = document.querySelectorAll('[data-count]');
+        const animateCounter = (counter) => {
+            const target = parseInt(counter.getAttribute('data-count'));
+            const suffix = counter.getAttribute('data-suffix') || '';
+            const duration = 2000;
+            const step = target / (duration / 16);
+            let current = 0;
+
+            const updateCounter = () => {
+                current += step;
+                if (current < target) {
+                    counter.textContent = Math.floor(current) + suffix;
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    counter.textContent = target + suffix;
+                }
+            };
+
+            updateCounter();
+        };
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.2,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+
+                    // Trigger counter animation
+                    if (entry.target.classList.contains('hero-stat-value')) {
+                        animateCounter(entry.target);
+                    }
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right, .hero-stat-value').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Start counter animation immediately for hero
+        counters.forEach(counter => animateCounter(counter));
+
+        // Initialize 3D Protein Viewer
+        document.addEventListener('DOMContentLoaded', function() {
+            const viewerElement = document.getElementById('proteinViewer');
+            if (viewerElement && typeof $3Dmol !== 'undefined') {
+                const viewer = $3Dmol.createViewer(viewerElement, {
+                    backgroundColor: '#0F172A'
+                });
+
+                // Load AlphaFold structure
+                $3Dmol.download('pdb:1QKI', viewer, {}, function() {
+                    viewer.setStyle({}, {
+                        cartoon: {
+                            color: 'spectrum',
+                            opacity: 0.9
+                        }
+                    });
+                    viewer.zoomTo();
+                    viewer.spin('y', 0.5);
+                    viewer.render();
+                });
+
+                // Variant buttons
+                document.querySelectorAll('.variant-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+
+                        const variant = this.getAttribute('data-variant');
+                        // In a real implementation, this would load different structures
+                        // For now, just change the color scheme
+                        // Clear existing styles and apply new colors
+                        if (variant === 'wild') {
+                            viewer.setStyle({}, {cartoon: {color: 'spectrum', opacity: 0.9}});
+                        } else if (variant === 'mediterranean') {
+                            // Use bright orange/gold base color
+                            viewer.setStyle({}, {cartoon: {color: 'orange', opacity: 0.9}});
+                            // Highlight mutation site S188F in bright red
+                            viewer.addStyle({resi: 188}, {cartoon: {color: 'red'}, stick: {color: 'red', radius: 0.3}});
+                        } else if (variant === 'african') {
+                            // Use bright cyan/teal base color
+                            viewer.setStyle({}, {cartoon: {color: 'cyan', opacity: 0.9}});
+                            // Highlight mutation sites V68M and N126D in yellow
+                            viewer.addStyle({resi: [68, 126]}, {cartoon: {color: 'yellow'}, stick: {color: 'yellow', radius: 0.3}});
+                        }
+                        viewer.render();
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
