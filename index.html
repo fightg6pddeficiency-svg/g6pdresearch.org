@@ -65,6 +65,13 @@
             75% { transform: translate(-20px, -20px) rotate(-5deg); }
         }
 
+        /* Video Grid Responsive */
+        @media (max-width: 768px) {
+            .video-grid-home {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
         /* Research Grid */
         .research-grid {
             display: grid;
@@ -80,7 +87,7 @@
 
         @media (min-width: 1024px) {
             .research-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
@@ -277,8 +284,8 @@
 
         <div class="hero-content">
             <div class="hero-badge">
-                <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i>
-                Research Initiative by Luke Chen
+                <i data-lucide="sparkles" style="width: 18px; height: 18px;"></i>
+                Research Initiative by <strong style="color: #fff; font-weight: 800;">Luke Chen</strong>
             </div>
 
             <h1>Advancing G6PD<br/>Deficiency Research</h1>
@@ -317,6 +324,34 @@
         <div class="scroll-indicator">
             <span>Scroll to explore</span>
             <i data-lucide="chevron-down" style="width: 20px; height: 20px;"></i>
+        </div>
+    </section>
+
+    <!-- G6PD Educational Videos -->
+    <section class="section" style="background: #0F172A; color: white; padding-top: 4rem; padding-bottom: 4rem;">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label" style="color: #10B981;">Educational Videos</span>
+                <h2 class="section-title" style="color: white;">G6PD Deficiency — Video Review</h2>
+                <p class="section-description" style="color: rgba(255,255,255,0.7);">
+                    Comprehensive two-part video series covering G6PD deficiency pathophysiology, diagnosis, and clinical management
+                </p>
+            </div>
+
+            <div class="video-grid-home" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 1100px; margin: 0 auto;">
+                <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1.5rem;">
+                    <h3 style="color: #10B981; font-size: 1.05rem; margin-bottom: 1rem;">Part 1 — Pathophysiology & Biochemistry</h3>
+                    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px;">
+                        <iframe src="https://www.youtube.com/embed/SuskNgFO_-8" title="G6PD Review Part 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+                    </div>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1.5rem;">
+                    <h3 style="color: #10B981; font-size: 1.05rem; margin-bottom: 1rem;">Part 2 — Diagnosis & Clinical Management</h3>
+                    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px;">
+                        <iframe src="https://www.youtube.com/embed/1XUoxbuJ7IU" title="G6PD Review Part 2" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -391,13 +426,13 @@
                     </p>
                 </a>
 
-                <a href="research/molecular-dynamics.html" class="research-card-new fade-in">
-                    <div class="research-card-icon" style="background: var(--gradient-2);">
-                        <i data-lucide="activity" style="width: 28px; height: 28px;"></i>
+                <a href="research/crispr.html" class="research-card-new fade-in">
+                    <div class="research-card-icon" style="background: linear-gradient(135deg, #10B981 0%, #14B8A6 100%);">
+                        <i data-lucide="scissors" style="width: 28px; height: 28px;"></i>
                     </div>
-                    <h3 style="margin-bottom: 0.5rem;">Molecular Dynamics</h3>
+                    <h3 style="margin-bottom: 0.5rem;">CRISPR Therapeutics</h3>
                     <p style="color: var(--text-light); font-size: 0.95rem;">
-                        Simulating protein behavior and mutation effects over time
+                        Gene editing approaches for potential cure
                     </p>
                 </a>
 
@@ -411,33 +446,13 @@
                     </p>
                 </a>
 
-                <a href="research/pharmacogenomics.html" class="research-card-new fade-in">
-                    <div class="research-card-icon" style="background: linear-gradient(135deg, #EF4444 0%, #EC4899 100%);">
-                        <i data-lucide="pill" style="width: 28px; height: 28px;"></i>
+                <a href="research/molecular-dynamics.html" class="research-card-new fade-in">
+                    <div class="research-card-icon" style="background: var(--gradient-2);">
+                        <i data-lucide="activity" style="width: 28px; height: 28px;"></i>
                     </div>
-                    <h3 style="margin-bottom: 0.5rem;">Pharmacogenomics</h3>
+                    <h3 style="margin-bottom: 0.5rem;">Molecular Dynamics</h3>
                     <p style="color: var(--text-light); font-size: 0.95rem;">
-                        Drug safety analysis and oxidative stress mechanisms
-                    </p>
-                </a>
-
-                <a href="research/ml-discovery.html" class="research-card-new fade-in">
-                    <div class="research-card-icon" style="background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);">
-                        <i data-lucide="brain" style="width: 28px; height: 28px;"></i>
-                    </div>
-                    <h3 style="margin-bottom: 0.5rem;">ML Drug Discovery</h3>
-                    <p style="color: var(--text-light); font-size: 0.95rem;">
-                        AI-powered search for therapeutic compounds
-                    </p>
-                </a>
-
-                <a href="research/crispr.html" class="research-card-new fade-in">
-                    <div class="research-card-icon" style="background: linear-gradient(135deg, #10B981 0%, #14B8A6 100%);">
-                        <i data-lucide="scissors" style="width: 28px; height: 28px;"></i>
-                    </div>
-                    <h3 style="margin-bottom: 0.5rem;">CRISPR Therapeutics</h3>
-                    <p style="color: var(--text-light); font-size: 0.95rem;">
-                        Gene editing approaches for potential cure
+                        Simulating protein behavior and mutation effects over time
                     </p>
                 </a>
             </div>
@@ -550,7 +565,7 @@
         </div>
 
         <div class="footer-bottom">
-            <p>© 2024 G6PD Research Initiative by Luke Chen. All rights reserved.</p>
+            <p>© 2026 G6PD Research Initiative by Luke Chen. All rights reserved.</p>
         </div>
     </footer>
 

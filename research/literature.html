@@ -39,6 +39,8 @@
             display: flex;
             align-items: flex-start;
             margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
         .paper-title {
             font-size: 1.1rem;
@@ -79,35 +81,14 @@
             text-decoration: none;
             transition: var(--transition);
         }
-        .paper-link.pubmed {
-            background: #326599;
-            color: white;
-        }
-        .paper-link.pubmed:hover {
-            background: #254a73;
-        }
-        .paper-link.doi {
-            background: var(--primary-light);
-            color: var(--primary);
-        }
-        .paper-link.doi:hover {
-            background: var(--primary);
-            color: white;
-        }
-        .paper-link.pdf {
-            background: #dc2626;
-            color: white;
-        }
-        .paper-link.pdf:hover {
-            background: #b91c1c;
-        }
-        .paper-link.pmc {
-            background: #059669;
-            color: white;
-        }
-        .paper-link.pmc:hover {
-            background: #047857;
-        }
+        .paper-link.pubmed { background: #326599; color: white; }
+        .paper-link.pubmed:hover { background: #254a73; }
+        .paper-link.doi { background: var(--primary-light); color: var(--primary); }
+        .paper-link.doi:hover { background: var(--primary); color: white; }
+        .paper-link.pdf { background: #dc2626; color: white; }
+        .paper-link.pdf:hover { background: #b91c1c; }
+        .paper-link.pmc { background: #059669; color: white; }
+        .paper-link.pmc:hover { background: #047857; }
         .citation-count {
             display: inline-flex;
             align-items: center;
@@ -119,17 +100,6 @@
             font-size: 0.8rem;
             font-weight: 600;
             margin-left: auto;
-        }
-        .citation-count svg {
-            width: 14px;
-            height: 14px;
-        }
-        .paper-header {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 0.75rem;
-            flex-wrap: wrap;
-            gap: 0.5rem;
         }
         .paper-title-row {
             display: flex;
@@ -153,6 +123,11 @@
             text-align: center;
             color: white;
         }
+        @media (min-width: 768px) {
+            .hero-literature {
+                padding: 150px 2rem 80px;
+            }
+        }
         .citation-note {
             background: var(--bg-alt);
             border-left: 4px solid var(--primary);
@@ -161,6 +136,23 @@
             margin-bottom: 2rem;
             font-size: 0.9rem;
             color: var(--text-light);
+        }
+        .lit-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+            padding: 12px 32px;
+            border-radius: 100px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
+        @media (max-width: 768px) {
+            .video-grid-lit {
+                grid-template-columns: 1fr !important;
+            }
         }
     </style>
 </head>
@@ -201,9 +193,9 @@
     <!-- Hero Section -->
     <section class="hero-literature">
         <div class="container">
-            <span class="section-label" style="background: rgba(16, 185, 129, 0.2); color: #10B981;">📚 Literature Database</span>
-            <h1 style="margin-top: 1rem; margin-bottom: 1rem;">Top 30 Most-Cited G6PD Papers</h1>
-            <p style="color: rgba(255,255,255,0.8); max-width: 700px; margin: 0 auto;">
+            <div class="lit-badge">Literature Database</div>
+            <h1 style="margin-top: 0.5rem; margin-bottom: 1rem; font-size: clamp(2rem, 5vw, 3.5rem);">Top 20 Most Influential G6PD Papers</h1>
+            <p style="color: rgba(255,255,255,0.8); max-width: 700px; margin: 0 auto; font-size: 1.1rem;">
                 A curated collection of the most influential and highly-cited research papers on Glucose-6-Phosphate Dehydrogenase deficiency, spanning discovery, genetics, clinical manifestations, and therapeutic approaches.
             </p>
         </div>
@@ -213,15 +205,105 @@
     <section class="section">
         <div class="container">
             <div class="citation-note">
-                <strong>Note:</strong> Citation counts are approximate estimates based on Google Scholar, Semantic Scholar, and other databases (as of early 2026). Papers are organized by research category and historical significance. Links to PubMed, DOI, and free PDF versions (where available) are provided. Click the orange citation badges to see approximate citation numbers for each paper.
+                <strong>Note:</strong> Citation counts are approximate estimates based on Google Scholar, Semantic Scholar, and other databases (as of early 2026). Papers are organized by research category and historical significance. Links to PubMed, DOI, and free PDF versions (where available) are provided.
             </div>
 
-            <!-- Foundational Discovery Papers -->
-            <div class="category-header">🔬 Foundational Discovery Papers</div>
+            <!-- Video Reviews -->
+            <div style="background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%); border-radius: 16px; padding: 2rem; margin-bottom: 2rem;">
+                <h3 style="color: white; margin-bottom: 0.5rem; font-size: 1.2rem;">G6PD Deficiency: A Comprehensive Video Review</h3>
+                <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; font-size: 0.9rem;">
+                    A two-part video series exploring the full landscape of G6PD research — from ancient history to cutting-edge computational biology and gene therapy.
+                </p>
+                <div class="video-grid-lit" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div>
+                        <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px;">
+                            <iframe
+                                src="https://www.youtube.com/embed/SuskNgFO_-8"
+                                title="G6PD Review - Part 1"
+                                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen
+                            ></iframe>
+                        </div>
+                        <p style="color: rgba(255,255,255,0.8); font-size: 0.85rem; margin-top: 0.75rem; font-weight: 500;">Part 1: History, Biochemistry & Clinical Impact</p>
+                    </div>
+                    <div>
+                        <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px;">
+                            <iframe
+                                src="https://www.youtube.com/embed/1XUoxbuJ7IU"
+                                title="G6PD Review - Part 2"
+                                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen
+                            ></iframe>
+                        </div>
+                        <p style="color: rgba(255,255,255,0.8); font-size: 0.85rem; margin-top: 0.75rem; font-weight: 500;">Part 2: Genetics, Therapeutics & Future Directions</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dr. Ernest Beutler - Featured -->
+            <div class="category-header" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); font-size: 1.4rem;">⭐ Dr. Ernest Beutler — Pioneer of G6PD Research</div>
+
+            <div class="paper-card" style="border: 2px solid var(--primary); box-shadow: 0 4px 20px rgba(0, 102, 204, 0.15);">
+                <div class="paper-header">
+                    <span class="paper-rank" style="width: 42px; height: 42px; font-size: 1rem;">1</span>
+                    <div class="paper-title-row">
+                        <div class="paper-title" style="font-size: 1.2rem;">G6PD deficiency</div>
+                        <span class="citation-count">📚 ~1,600 citations</span>
+                    </div>
+                </div>
+                <div class="paper-authors">Beutler E</div>
+                <div class="paper-journal">Blood. 1994;84(11):3613-3636</div>
+                <div class="paper-abstract">Ernest Beutler's comprehensive review summarizing decades of G6PD research. Covers biochemistry, genetics, clinical manifestations, and population genetics in extensive detail. This is widely considered the most important single paper on G6PD deficiency and is essential reading for anyone entering the field.</div>
+                <div class="paper-links">
+                    <a href="https://pubmed.ncbi.nlm.nih.gov/7949118/" target="_blank" class="paper-link pubmed">PubMed</a>
+                    <a href="https://doi.org/10.1182/blood.V84.11.3613.bloodjournal84113613" target="_blank" class="paper-link doi">DOI</a>
+                    <a href="https://ashpublications.org/blood/article-pdf/84/11/3613/607686/3613.pdf" target="_blank" class="paper-link pdf">PDF</a>
+                </div>
+            </div>
+
+            <div class="paper-card" style="border: 2px solid var(--primary); box-shadow: 0 4px 20px rgba(0, 102, 204, 0.1);">
+                <div class="paper-header">
+                    <span class="paper-rank" style="width: 42px; height: 42px; font-size: 1rem;">2</span>
+                    <div class="paper-title-row">
+                        <div class="paper-title" style="font-size: 1.2rem;">Glucose-6-phosphate dehydrogenase deficiency</div>
+                        <span class="citation-count">📚 ~850 citations</span>
+                    </div>
+                </div>
+                <div class="paper-authors">Beutler E</div>
+                <div class="paper-journal">N Engl J Med. 1991;324(3):169-174</div>
+                <div class="paper-abstract">A highly influential clinical review in the New England Journal of Medicine, providing physicians with practical guidance on diagnosis and management of G6PD deficiency.</div>
+                <div class="paper-links">
+                    <a href="https://pubmed.ncbi.nlm.nih.gov/1984194/" target="_blank" class="paper-link pubmed">PubMed</a>
+                    <a href="https://doi.org/10.1056/NEJM199101173240306" target="_blank" class="paper-link doi">DOI</a>
+                </div>
+            </div>
+
+            <div class="paper-card" style="border: 2px solid var(--primary); box-shadow: 0 4px 20px rgba(0, 102, 204, 0.1);">
+                <div class="paper-header">
+                    <span class="paper-rank" style="width: 42px; height: 42px; font-size: 1rem;">3</span>
+                    <div class="paper-title-row">
+                        <div class="paper-title" style="font-size: 1.2rem;">The normal human female as a mosaic of X-chromosome activity: Studies using the gene for G6PD deficiency as a marker</div>
+                        <span class="citation-count">📚 ~580 citations</span>
+                    </div>
+                </div>
+                <div class="paper-authors">Beutler E, Yeh M, Fairbanks VF</div>
+                <div class="paper-journal">Proc Natl Acad Sci USA. 1962;48:9-16</div>
+                <div class="paper-abstract">Ernest Beutler's groundbreaking study demonstrating X-chromosome inactivation mosaicism in human females, using G6PD deficiency as a marker. This work provided crucial evidence for the Lyon hypothesis in humans.</div>
+                <div class="paper-links">
+                    <a href="https://pubmed.ncbi.nlm.nih.gov/13868717/" target="_blank" class="paper-link pubmed">PubMed</a>
+                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC285481/" target="_blank" class="paper-link pmc">Free PMC</a>
+                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC285481/pdf/pnas00184-0017.pdf" target="_blank" class="paper-link pdf">PDF</a>
+                </div>
+            </div>
+
+            <!-- Foundational Discovery -->
+            <div class="category-header">🔬 Foundational Discovery</div>
 
             <div class="paper-card">
                 <div class="paper-header">
-                    <span class="paper-rank">1</span>
+                    <span class="paper-rank">4</span>
                     <div class="paper-title-row">
                         <div class="paper-title">Enzymatic deficiency in primaquine-sensitive erythrocytes</div>
                         <span class="citation-count">📚 ~1,200 citations</span>
@@ -236,30 +318,12 @@
                 </div>
             </div>
 
-            <div class="paper-card">
-                <div class="paper-header">
-                    <span class="paper-rank">2</span>
-                    <div class="paper-title-row">
-                        <div class="paper-title">The normal human female as a mosaic of X-chromosome activity: Studies using the gene for G6PD deficiency as a marker</div>
-                        <span class="citation-count">📚 ~580 citations</span>
-                    </div>
-                </div>
-                <div class="paper-authors">Beutler E, Yeh M, Fairbanks VF</div>
-                <div class="paper-journal">Proc Natl Acad Sci USA. 1962;48:9-16</div>
-                <div class="paper-abstract">Ernest Beutler's groundbreaking study demonstrating X-chromosome inactivation mosaicism in human females, using G6PD deficiency as a marker. This work provided crucial evidence for the Lyon hypothesis in humans.</div>
-                <div class="paper-links">
-                    <a href="https://pubmed.ncbi.nlm.nih.gov/13868717/" target="_blank" class="paper-link pubmed">PubMed</a>
-                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC285481/" target="_blank" class="paper-link pmc">Free PMC</a>
-                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC285481/pdf/pnas00184-0017.pdf" target="_blank" class="paper-link pdf">PDF</a>
-                </div>
-            </div>
-
             <!-- Major Reviews -->
             <div class="category-header">📖 Major Review Articles</div>
 
             <div class="paper-card">
                 <div class="paper-header">
-                    <span class="paper-rank">3</span>
+                    <span class="paper-rank">5</span>
                     <div class="paper-title-row">
                         <div class="paper-title">Glucose-6-phosphate dehydrogenase deficiency</div>
                         <span class="citation-count">📚 ~1,100 citations</span>
@@ -276,60 +340,7 @@
 
             <div class="paper-card">
                 <div class="paper-header">
-                    <span class="paper-rank">4</span>
-                    <div class="paper-title-row">
-                        <div class="paper-title">Glucose-6-phosphate dehydrogenase deficiency</div>
-                        <span class="citation-count">📚 ~340 citations</span>
-                    </div>
-                </div>
-                <div class="paper-authors">Luzzatto L, Ally M, Notaro R</div>
-                <div class="paper-journal">Blood. 2020;136(11):1225-1240</div>
-                <div class="paper-abstract">The definitive modern review by Lucio Luzzatto, one of the foremost experts on G6PD. Covers molecular pathophysiology, clinical spectrum, diagnosis, and emerging therapies.</div>
-                <div class="paper-links">
-                    <a href="https://pubmed.ncbi.nlm.nih.gov/32702756/" target="_blank" class="paper-link pubmed">PubMed</a>
-                    <a href="https://doi.org/10.1182/blood.2019000944" target="_blank" class="paper-link doi">DOI</a>
-                    <a href="https://ashpublications.org/blood/article-pdf/136/11/1225/1757404/bloodbld2019000944.pdf" target="_blank" class="paper-link pdf">PDF</a>
-                </div>
-            </div>
-
-            <div class="paper-card">
-                <div class="paper-header">
-                    <span class="paper-rank">5</span>
-                    <div class="paper-title-row">
-                        <div class="paper-title">G6PD deficiency</div>
-                        <span class="citation-count">📚 ~1,600 citations</span>
-                    </div>
-                </div>
-                <div class="paper-authors">Beutler E</div>
-                <div class="paper-journal">Blood. 1994;84(11):3613-3636</div>
-                <div class="paper-abstract">Ernest Beutler's comprehensive review summarizing decades of G6PD research. Covers biochemistry, genetics, clinical manifestations, and population genetics in extensive detail.</div>
-                <div class="paper-links">
-                    <a href="https://pubmed.ncbi.nlm.nih.gov/7949118/" target="_blank" class="paper-link pubmed">PubMed</a>
-                    <a href="https://doi.org/10.1182/blood.V84.11.3613.bloodjournal84113613" target="_blank" class="paper-link doi">DOI</a>
-                    <a href="https://ashpublications.org/blood/article-pdf/84/11/3613/607686/3613.pdf" target="_blank" class="paper-link pdf">PDF</a>
-                </div>
-            </div>
-
-            <div class="paper-card">
-                <div class="paper-header">
                     <span class="paper-rank">6</span>
-                    <div class="paper-title-row">
-                        <div class="paper-title">Glucose-6-phosphate dehydrogenase deficiency</div>
-                        <span class="citation-count">📚 ~850 citations</span>
-                    </div>
-                </div>
-                <div class="paper-authors">Beutler E</div>
-                <div class="paper-journal">N Engl J Med. 1991;324(3):169-174</div>
-                <div class="paper-abstract">A highly influential clinical review in the New England Journal of Medicine, providing physicians with practical guidance on diagnosis and management of G6PD deficiency.</div>
-                <div class="paper-links">
-                    <a href="https://pubmed.ncbi.nlm.nih.gov/1984194/" target="_blank" class="paper-link pubmed">PubMed</a>
-                    <a href="https://doi.org/10.1056/NEJM199101173240306" target="_blank" class="paper-link doi">DOI</a>
-                </div>
-            </div>
-
-            <div class="paper-card">
-                <div class="paper-header">
-                    <span class="paper-rank">7</span>
                     <div class="paper-title-row">
                         <div class="paper-title">Glucose-6-phosphate dehydrogenase deficiency. WHO Working Group</div>
                         <span class="citation-count">📚 ~1,100 citations</span>
@@ -345,12 +356,48 @@
                 </div>
             </div>
 
+            <div class="paper-card">
+                <div class="paper-header">
+                    <span class="paper-rank">7</span>
+                    <div class="paper-title-row">
+                        <div class="paper-title">Glucose-6-phosphate dehydrogenase deficiency: a historical perspective</div>
+                        <span class="citation-count">📚 ~350 citations</span>
+                    </div>
+                </div>
+                <div class="paper-authors">Luzzatto L</div>
+                <div class="paper-journal">Blood. 2008;111(1):16-24</div>
+                <div class="paper-abstract">Lucio Luzzatto's historical review tracing 50+ years of G6PD research from discovery to modern molecular understanding. Essential reading for context.</div>
+                <div class="paper-links">
+                    <a href="https://pubmed.ncbi.nlm.nih.gov/18156501/" target="_blank" class="paper-link pubmed">PubMed</a>
+                    <a href="https://doi.org/10.1182/blood-2007-04-077412" target="_blank" class="paper-link doi">DOI</a>
+                    <a href="https://ashpublications.org/blood/article-pdf/111/1/16/1220127/zh800108000016.pdf" target="_blank" class="paper-link pdf">PDF</a>
+                </div>
+            </div>
+
+            <div class="paper-card">
+                <div class="paper-header">
+                    <span class="paper-rank">8</span>
+                    <div class="paper-title-row">
+                        <div class="paper-title">Glucose-6-phosphate dehydrogenase deficiency</div>
+                        <span class="citation-count">📚 ~340 citations</span>
+                    </div>
+                </div>
+                <div class="paper-authors">Luzzatto L, Ally M, Notaro R</div>
+                <div class="paper-journal">Blood. 2020;136(11):1225-1240</div>
+                <div class="paper-abstract">The definitive modern review by Lucio Luzzatto, one of the foremost experts on G6PD. Covers molecular pathophysiology, clinical spectrum, diagnosis, and emerging therapies.</div>
+                <div class="paper-links">
+                    <a href="https://pubmed.ncbi.nlm.nih.gov/32702756/" target="_blank" class="paper-link pubmed">PubMed</a>
+                    <a href="https://doi.org/10.1182/blood.2019000944" target="_blank" class="paper-link doi">DOI</a>
+                    <a href="https://ashpublications.org/blood/article-pdf/136/11/1225/1757404/bloodbld2019000944.pdf" target="_blank" class="paper-link pdf">PDF</a>
+                </div>
+            </div>
+
             <!-- Structural Biology -->
             <div class="category-header">🧬 Structural Biology & Biochemistry</div>
 
             <div class="paper-card">
                 <div class="paper-header">
-                    <span class="paper-rank">8</span>
+                    <span class="paper-rank">9</span>
                     <div class="paper-title-row">
                         <div class="paper-title">Human glucose-6-phosphate dehydrogenase: the crystal structure reveals a structural NADP(+) molecule and provides insights into enzyme deficiency</div>
                         <span class="citation-count">📚 ~520 citations</span>
@@ -363,24 +410,6 @@
                     <a href="https://pubmed.ncbi.nlm.nih.gov/10745013/" target="_blank" class="paper-link pubmed">PubMed</a>
                     <a href="https://doi.org/10.1016/s0969-2126(00)00104-0" target="_blank" class="paper-link doi">DOI</a>
                     <a href="https://medschool.lsuhsc.edu/biochemistry/Courses/Biochemistry201/Kim/Au%202000%20G6PD%20human.pdf" target="_blank" class="paper-link pdf">PDF</a>
-                </div>
-            </div>
-
-            <div class="paper-card">
-                <div class="paper-header">
-                    <span class="paper-rank">9</span>
-                    <div class="paper-title-row">
-                        <div class="paper-title">Long-range structural defects by pathogenic mutations in most severe glucose-6-phosphate dehydrogenase deficiency</div>
-                        <span class="citation-count">📚 ~55 citations</span>
-                    </div>
-                </div>
-                <div class="paper-authors">Hwang S, Mruk K, Engel JD, et al.</div>
-                <div class="paper-journal">Proc Natl Acad Sci USA. 2021;118(4):e2022790118</div>
-                <div class="paper-abstract">Recent structural study using cryo-EM showing how Class I mutations cause long-range structural perturbations that destabilize the enzyme. Provides molecular basis for developing therapeutic stabilizers.</div>
-                <div class="paper-links">
-                    <a href="https://pubmed.ncbi.nlm.nih.gov/33468659/" target="_blank" class="paper-link pubmed">PubMed</a>
-                    <a href="https://doi.org/10.1073/pnas.2022790118" target="_blank" class="paper-link doi">DOI</a>
-                    <a href="https://www.pnas.org/doi/pdf/10.1073/pnas.2022790118" target="_blank" class="paper-link pdf">PDF</a>
                 </div>
             </div>
 
@@ -481,16 +510,16 @@
                 <div class="paper-header">
                     <span class="paper-rank">15</span>
                     <div class="paper-title-row">
-                        <div class="paper-title">Glucose-6-phosphate dehydrogenase deficiency and malaria</div>
-                        <span class="citation-count">📚 ~240 citations</span>
+                        <div class="paper-title">The global prevalence of glucose-6-phosphate dehydrogenase deficiency: a systematic review and meta-analysis</div>
+                        <span class="citation-count">📚 ~480 citations</span>
                     </div>
                 </div>
-                <div class="paper-authors">Ruwende C, Hill A</div>
-                <div class="paper-journal">J Mol Med. 1998;76(8):581-588</div>
-                <div class="paper-abstract">Comprehensive review of the relationship between G6PD deficiency and malaria resistance, discussing evolutionary implications and mechanisms of protection.</div>
+                <div class="paper-authors">Nkhoma ET, Poole C, Vannappagari V, Hall SA, Beutler E</div>
+                <div class="paper-journal">Blood Cells Mol Dis. 2009;42(3):267-278</div>
+                <div class="paper-abstract">Systematic review of G6PD prevalence across populations. Estimated 4.9% global prevalence with highest rates in Africa, Middle East, and Asia.</div>
                 <div class="paper-links">
-                    <a href="https://pubmed.ncbi.nlm.nih.gov/9694435/" target="_blank" class="paper-link pubmed">PubMed</a>
-                    <a href="https://doi.org/10.1007/s001090050261" target="_blank" class="paper-link doi">DOI</a>
+                    <a href="https://pubmed.ncbi.nlm.nih.gov/19233695/" target="_blank" class="paper-link pubmed">PubMed</a>
+                    <a href="https://doi.org/10.1016/j.bcmd.2008.12.005" target="_blank" class="paper-link doi">DOI</a>
                 </div>
             </div>
 
@@ -516,16 +545,37 @@
                 <div class="paper-header">
                     <span class="paper-rank">17</span>
                     <div class="paper-title-row">
-                        <div class="paper-title">The global prevalence of glucose-6-phosphate dehydrogenase deficiency: a systematic review and meta-analysis</div>
-                        <span class="citation-count">📚 ~480 citations</span>
+                        <div class="paper-title">Glucose-6-phosphate dehydrogenase deficiency and malaria</div>
+                        <span class="citation-count">📚 ~240 citations</span>
                     </div>
                 </div>
-                <div class="paper-authors">Nkhoma ET, Poole C, Vannappagari V, Hall SA, Beutler E</div>
-                <div class="paper-journal">Blood Cells Mol Dis. 2009;42(3):267-278</div>
-                <div class="paper-abstract">Systematic review of G6PD prevalence across populations. Estimated 4.9% global prevalence with highest rates in Africa, Middle East, and Asia.</div>
+                <div class="paper-authors">Ruwende C, Hill A</div>
+                <div class="paper-journal">J Mol Med. 1998;76(8):581-588</div>
+                <div class="paper-abstract">Comprehensive review of the relationship between G6PD deficiency and malaria resistance, discussing evolutionary implications and mechanisms of protection.</div>
                 <div class="paper-links">
-                    <a href="https://pubmed.ncbi.nlm.nih.gov/19233695/" target="_blank" class="paper-link pubmed">PubMed</a>
-                    <a href="https://doi.org/10.1016/j.bcmd.2008.12.005" target="_blank" class="paper-link doi">DOI</a>
+                    <a href="https://pubmed.ncbi.nlm.nih.gov/9694435/" target="_blank" class="paper-link pubmed">PubMed</a>
+                    <a href="https://doi.org/10.1007/s001090050261" target="_blank" class="paper-link doi">DOI</a>
+                </div>
+            </div>
+
+            <!-- Pharmacogenomics & Clinical -->
+            <div class="category-header">💊 Pharmacogenomics & Clinical</div>
+
+            <div class="paper-card">
+                <div class="paper-header">
+                    <span class="paper-rank">18</span>
+                    <div class="paper-title-row">
+                        <div class="paper-title">G6PD deficiency: a classic example of pharmacogenetics with on-going clinical implications</div>
+                        <span class="citation-count">📚 ~210 citations</span>
+                    </div>
+                </div>
+                <div class="paper-authors">Luzzatto L, Seneca E</div>
+                <div class="paper-journal">Br J Haematol. 2014;164(4):469-480</div>
+                <div class="paper-abstract">Reviews G6PD deficiency as the prototype pharmacogenetic condition, discussing drugs to avoid and implications for antimalarial therapy.</div>
+                <div class="paper-links">
+                    <a href="https://pubmed.ncbi.nlm.nih.gov/24372186/" target="_blank" class="paper-link pubmed">PubMed</a>
+                    <a href="https://doi.org/10.1111/bjh.12665" target="_blank" class="paper-link doi">DOI</a>
+                    <a href="https://onlinelibrary.wiley.com/doi/pdfdirect/10.1111/bjh.12665" target="_blank" class="paper-link pdf">PDF</a>
                 </div>
             </div>
 
@@ -534,7 +584,7 @@
 
             <div class="paper-card">
                 <div class="paper-header">
-                    <span class="paper-rank">18</span>
+                    <span class="paper-rank">19</span>
                     <div class="paper-title-row">
                         <div class="paper-title">Glucose-6-phosphate dehydrogenase deficiency: a potential source of severe neonatal hyperbilirubinaemia and kernicterus</div>
                         <span class="citation-count">📚 ~180 citations</span>
@@ -551,7 +601,7 @@
 
             <div class="paper-card">
                 <div class="paper-header">
-                    <span class="paper-rank">19</span>
+                    <span class="paper-rank">20</span>
                     <div class="paper-title-row">
                         <div class="paper-title">Glucose-6-phosphate dehydrogenase deficiency: a hidden risk for kernicterus</div>
                         <span class="citation-count">📚 ~140 citations</span>
@@ -563,207 +613,6 @@
                 <div class="paper-links">
                     <a href="https://pubmed.ncbi.nlm.nih.gov/15686267/" target="_blank" class="paper-link pubmed">PubMed</a>
                     <a href="https://doi.org/10.1053/j.semperi.2004.09.001" target="_blank" class="paper-link doi">DOI</a>
-                </div>
-            </div>
-
-            <div class="paper-card">
-                <div class="paper-header">
-                    <span class="paper-rank">20</span>
-                    <div class="paper-title-row">
-                        <div class="paper-title">Glucose-6-Phosphate Dehydrogenase Deficiency and Neonatal Hyperbilirubinemia: Insights on Pathophysiology, Diagnosis, and Gene Variants</div>
-                        <span class="citation-count">📚 ~45 citations</span>
-                    </div>
-                </div>
-                <div class="paper-authors">Lam R, Ma IWY, Engel J</div>
-                <div class="paper-journal">Front Pediatr. 2022;10:875877</div>
-                <div class="paper-abstract">Recent comprehensive review on the relationship between G6PD deficiency and neonatal hyperbilirubinemia, including discussion of gene variant heterogeneity.</div>
-                <div class="paper-links">
-                    <a href="https://pubmed.ncbi.nlm.nih.gov/35633966/" target="_blank" class="paper-link pubmed">PubMed</a>
-                    <a href="https://doi.org/10.3389/fped.2022.875877" target="_blank" class="paper-link doi">DOI</a>
-                    <a href="https://www.frontiersin.org/journals/pediatrics/articles/10.3389/fped.2022.875877/pdf" target="_blank" class="paper-link pdf">PDF</a>
-                </div>
-            </div>
-
-            <!-- Pharmacogenomics -->
-            <div class="category-header">💊 Pharmacogenomics & Drug Safety</div>
-
-            <div class="paper-card">
-                <div class="paper-header">
-                    <span class="paper-rank">21</span>
-                    <div class="paper-title-row">
-                        <div class="paper-title">G6PD deficiency: a classic example of pharmacogenetics with on-going clinical implications</div>
-                        <span class="citation-count">📚 ~210 citations</span>
-                    </div>
-                </div>
-                <div class="paper-authors">Luzzatto L, Seneca E</div>
-                <div class="paper-journal">Br J Haematol. 2014;164(4):469-480</div>
-                <div class="paper-abstract">Reviews G6PD deficiency as the prototype pharmacogenetic condition, discussing drugs to avoid and implications for antimalarial therapy.</div>
-                <div class="paper-links">
-                    <a href="https://pubmed.ncbi.nlm.nih.gov/24372186/" target="_blank" class="paper-link pubmed">PubMed</a>
-                    <a href="https://doi.org/10.1111/bjh.12665" target="_blank" class="paper-link doi">DOI</a>
-                    <a href="https://onlinelibrary.wiley.com/doi/pdfdirect/10.1111/bjh.12665" target="_blank" class="paper-link pdf">PDF</a>
-                </div>
-            </div>
-
-            <div class="paper-card">
-                <div class="paper-header">
-                    <span class="paper-rank">22</span>
-                    <div class="paper-title-row">
-                        <div class="paper-title">Testing for G6PD deficiency for safe use of primaquine in radical cure of P. vivax and P. ovale malaria</div>
-                        <span class="citation-count">📚 WHO Guideline</span>
-                    </div>
-                </div>
-                <div class="paper-authors">World Health Organization</div>
-                <div class="paper-journal">WHO Policy Brief. 2016</div>
-                <div class="paper-abstract">WHO guidance on G6PD testing before primaquine treatment for radical cure of vivax malaria, addressing the challenge of safe antimalarial deployment.</div>
-                <div class="paper-links">
-                    <a href="https://www.who.int/publications/i/item/9789241511797" target="_blank" class="paper-link pdf">WHO PDF</a>
-                </div>
-            </div>
-
-            <div class="paper-card">
-                <div class="paper-header">
-                    <span class="paper-rank">23</span>
-                    <div class="paper-title-row">
-                        <div class="paper-title">Current Investigations on Clinical Pharmacology and Therapeutics of Glucose-6-Phosphate Dehydrogenase Deficiency</div>
-                        <span class="citation-count">📚 ~35 citations</span>
-                    </div>
-                </div>
-                <div class="paper-authors">Richardson SR, O'Malley GF</div>
-                <div class="paper-journal">Front Pharmacol. 2021;12:625374</div>
-                <div class="paper-abstract">Recent review of pharmacological considerations in G6PD deficiency, including oxidative drugs, rasburicase reactions, and emerging therapeutic approaches.</div>
-                <div class="paper-links">
-                    <a href="https://pubmed.ncbi.nlm.nih.gov/34012389/" target="_blank" class="paper-link pubmed">PubMed</a>
-                    <a href="https://doi.org/10.3389/fphar.2021.625374" target="_blank" class="paper-link doi">DOI</a>
-                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8122012/pdf/fphar-12-625374.pdf" target="_blank" class="paper-link pdf">PDF</a>
-                </div>
-            </div>
-
-            <!-- Diagnostic Methods -->
-            <div class="category-header">🔬 Diagnostic Methods</div>
-
-            <div class="paper-card">
-                <div class="paper-header">
-                    <span class="paper-rank">24</span>
-                    <div class="paper-title-row">
-                        <div class="paper-title">A novel cytofluorometric assay for the detection and quantification of glucose-6-phosphate dehydrogenase deficiency</div>
-                        <span class="citation-count">📚 ~115 citations</span>
-                    </div>
-                </div>
-                <div class="paper-authors">Shah SS, Diakite SAS, Traore K, et al.</div>
-                <div class="paper-journal">Sci Rep. 2012;2:299</div>
-                <div class="paper-abstract">Development of a novel flow cytometric assay for G6PD deficiency that can detect heterozygous females, addressing a major diagnostic challenge.</div>
-                <div class="paper-links">
-                    <a href="https://pubmed.ncbi.nlm.nih.gov/22393475/" target="_blank" class="paper-link pubmed">PubMed</a>
-                    <a href="https://doi.org/10.1038/srep00299" target="_blank" class="paper-link doi">DOI</a>
-                    <a href="https://www.nature.com/articles/srep00299.pdf" target="_blank" class="paper-link pdf">PDF</a>
-                </div>
-            </div>
-
-            <div class="paper-card">
-                <div class="paper-header">
-                    <span class="paper-rank">25</span>
-                    <div class="paper-title-row">
-                        <div class="paper-title">Standardization of G6PD enzyme activity assays: Lessons from the G6PD Deficiency Working Group</div>
-                        <span class="citation-count">📚 ~85 citations</span>
-                    </div>
-                </div>
-                <div class="paper-authors">Domingo GJ, Satyagraha AW, Sivber A, et al.</div>
-                <div class="paper-journal">Malar J. 2014;13:70</div>
-                <div class="paper-abstract">Guidelines for standardizing G6PD enzyme activity assays to improve diagnostic accuracy across different laboratory settings.</div>
-                <div class="paper-links">
-                    <a href="https://pubmed.ncbi.nlm.nih.gov/24555546/" target="_blank" class="paper-link pubmed">PubMed</a>
-                    <a href="https://doi.org/10.1186/1475-2875-13-70" target="_blank" class="paper-link doi">DOI</a>
-                    <a href="https://malariajournal.biomedcentral.com/counter/pdf/10.1186/1475-2875-13-70.pdf" target="_blank" class="paper-link pdf">PDF</a>
-                </div>
-            </div>
-
-            <!-- Recent Advances -->
-            <div class="category-header">🚀 Recent Advances & Emerging Research</div>
-
-            <div class="paper-card">
-                <div class="paper-header">
-                    <span class="paper-rank">26</span>
-                    <div class="paper-title-row">
-                        <div class="paper-title">Recent findings in the regulation of G6PD and its role in diseases</div>
-                        <span class="citation-count">📚 ~50 citations</span>
-                    </div>
-                </div>
-                <div class="paper-authors">Yang HC, Wu YH, Yen WC, et al.</div>
-                <div class="paper-journal">Front Pharmacol. 2022;13:932154</div>
-                <div class="paper-abstract">Reviews G6PD regulation mechanisms and emerging roles in cancer, cardiovascular disease, and metabolic disorders beyond hemolytic anemia.</div>
-                <div class="paper-links">
-                    <a href="https://pubmed.ncbi.nlm.nih.gov/36016550/" target="_blank" class="paper-link pubmed">PubMed</a>
-                    <a href="https://doi.org/10.3389/fphar.2022.932154" target="_blank" class="paper-link doi">DOI</a>
-                    <a href="https://www.frontiersin.org/journals/pharmacology/articles/10.3389/fphar.2022.932154/pdf" target="_blank" class="paper-link pdf">PDF</a>
-                </div>
-            </div>
-
-            <div class="paper-card">
-                <div class="paper-header">
-                    <span class="paper-rank">27</span>
-                    <div class="paper-title-row">
-                        <div class="paper-title">Global, regional, and national burden of glucose-6-phosphate dehydrogenase (G6PD) deficiency from 1990 to 2021</div>
-                        <span class="citation-count">📚 New (2025)</span>
-                    </div>
-                </div>
-                <div class="paper-authors">GBD 2021 G6PD Collaborators</div>
-                <div class="paper-journal">Front Genet. 2025;16:1593728</div>
-                <div class="paper-abstract">Comprehensive analysis of the global disease burden from G6PD deficiency using Global Burden of Disease study data through 2021.</div>
-                <div class="paper-links">
-                    <a href="https://www.frontiersin.org/journals/genetics/articles/10.3389/fgene.2025.1593728/full" target="_blank" class="paper-link doi">Full Text</a>
-                </div>
-            </div>
-
-            <div class="paper-card">
-                <div class="paper-header">
-                    <span class="paper-rank">28</span>
-                    <div class="paper-title-row">
-                        <div class="paper-title">New WHO classification of genetic variants causing G6PD deficiency</div>
-                        <span class="citation-count">📚 New (2024)</span>
-                    </div>
-                </div>
-                <div class="paper-authors">WHO G6PD Working Group</div>
-                <div class="paper-journal">Blood. 2024</div>
-                <div class="paper-abstract">Updated WHO classification merging Classes II and III into a single Class B, simplifying clinical decision-making for primaquine use.</div>
-                <div class="paper-links">
-                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11276151/" target="_blank" class="paper-link pmc">Free PMC</a>
-                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11276151/pdf/main.pdf" target="_blank" class="paper-link pdf">PDF</a>
-                </div>
-            </div>
-
-            <div class="paper-card">
-                <div class="paper-header">
-                    <span class="paper-rank">29</span>
-                    <div class="paper-title-row">
-                        <div class="paper-title">G6PD deficiency and the need for a novel treatment to prevent kernicterus</div>
-                        <span class="citation-count">📚 ~25 citations</span>
-                    </div>
-                </div>
-                <div class="paper-authors">Watchko JF, Kaplan M, Stark AR, et al.</div>
-                <div class="paper-journal">Early Hum Dev. 2016;97:57-60</div>
-                <div class="paper-abstract">Highlights the unmet need for novel treatments to prevent kernicterus in G6PD-deficient newborns, calling for therapeutic development.</div>
-                <div class="paper-links">
-                    <a href="https://pubmed.ncbi.nlm.nih.gov/27235212/" target="_blank" class="paper-link pubmed">PubMed</a>
-                    <a href="https://doi.org/10.1016/j.earlhumdev.2016.05.003" target="_blank" class="paper-link doi">DOI</a>
-                </div>
-            </div>
-
-            <div class="paper-card">
-                <div class="paper-header">
-                    <span class="paper-rank">30</span>
-                    <div class="paper-title-row">
-                        <div class="paper-title">Glucose-6-phosphate dehydrogenase deficiency: a historical perspective</div>
-                        <span class="citation-count">📚 ~350 citations</span>
-                    </div>
-                </div>
-                <div class="paper-authors">Luzzatto L</div>
-                <div class="paper-journal">Blood. 2008;111(1):16-24</div>
-                <div class="paper-abstract">Lucio Luzzatto's historical review tracing 50+ years of G6PD research from discovery to modern molecular understanding. Essential reading for context.</div>
-                <div class="paper-links">
-                    <a href="https://pubmed.ncbi.nlm.nih.gov/18156501/" target="_blank" class="paper-link pubmed">PubMed</a>
-                    <a href="https://doi.org/10.1182/blood-2007-04-077412" target="_blank" class="paper-link doi">DOI</a>
-                    <a href="https://ashpublications.org/blood/article-pdf/111/1/16/1220127/zh800108000016.pdf" target="_blank" class="paper-link pdf">PDF</a>
                 </div>
             </div>
 
@@ -798,7 +647,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© 2025 G6PD Research Initiative by Luke Chen. All rights reserved.</p>
+            <p>© 2026 G6PD Research Initiative by Luke Chen. All rights reserved.</p>
         </div>
     </footer>
 

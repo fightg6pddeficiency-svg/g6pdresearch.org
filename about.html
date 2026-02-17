@@ -108,6 +108,37 @@
             font-size: 0.85rem;
             color: var(--text-light);
         }
+        .section-with-photo {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+        @media (max-width: 768px) {
+            .section-with-photo {
+                grid-template-columns: 1fr;
+            }
+        }
+        .section-photo {
+            width: 100%;
+            border-radius: 14px;
+            object-fit: cover;
+            aspect-ratio: 3 / 4;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+            border: 3px solid var(--border);
+            transition: var(--transition);
+        }
+        .section-photo:hover {
+            box-shadow: 0 10px 36px rgba(0,0,0,0.18);
+            transform: translateY(-3px);
+        }
+        .section-text p {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+        .section-text p:last-child {
+            margin-bottom: 0;
+        }
         .timeline {
             position: relative;
             padding-left: 2rem;
@@ -199,7 +230,7 @@
     <section class="about-hero">
         <div class="container-sm">
             <div class="profile-image">
-                <i data-lucide="user" style="width: 64px; height: 64px;"></i>
+                <img src="Luke Chen.jpg" alt="Luke Chen" style="width: 100%; height: 100%; object-fit: cover; object-position: center 20%; border-radius: 50%;">
             </div>
             <h1>Luke Chen</h1>
             <p style="color: rgba(255,255,255,0.8); font-size: 1.1rem; margin-top: 0.5rem;">
@@ -216,19 +247,24 @@
                     <i data-lucide="heart" style="width: 24px; height: 24px;"></i>
                     My G6PD Journey
                 </h3>
-                <p>
-                    I was diagnosed with G6PD deficiency as an infant when I experienced severe
-                    jaundice. Growing up, I learned to navigate a world full of hidden triggers—certain
-                    medications, foods like fava beans, and even some household chemicals could
-                    potentially cause dangerous hemolytic episodes.
-                </p>
-                <p>
-                    My mother and sister also carry the G6PD gene, making this truly a family matter.
-                    This personal experience drove me to create <a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a>,
-                    the world's first AI-powered safety checker for G6PD patients. But I knew that
-                    managing triggers wasn't enough—I wanted to understand the science deeply enough
-                    to contribute to finding a cure.
-                </p>
+                <div class="section-with-photo">
+                    <img src="IMG_0338.jpg" alt="Luke Chen" class="section-photo">
+                    <div class="section-text">
+                        <p>
+                            I was diagnosed with G6PD deficiency as an infant when I experienced severe
+                            jaundice. Growing up, I learned to navigate a world full of hidden triggers—certain
+                            medications, foods like fava beans, and even some household chemicals could
+                            potentially cause dangerous hemolytic episodes.
+                        </p>
+                        <p>
+                            My mother and sister also carry the G6PD gene, making this truly a family matter.
+                            This personal experience drove me to create <a href="https://www.g6pd.ai" target="_blank">G6PD.ai</a>,
+                            the world's first AI-powered safety checker for G6PD patients. But I knew that
+                            managing triggers wasn't enough—I wanted to understand the science deeply enough
+                            to contribute to finding a cure.
+                        </p>
+                    </div>
+                </div>
             </div>
             <!-- Research Vision -->
             <div class="story-card fade-in">
@@ -236,17 +272,22 @@
                     <i data-lucide="target" style="width: 24px; height: 24px;"></i>
                     Research Vision
                 </h3>
-                <p>
-                    My approach combines computational biology with emerging gene editing technologies.
-                    By studying G6PD protein structures through AlphaFold and exploring CRISPR-Cas9
-                    therapeutic strategies, I'm working to bridge the gap between structural biology
-                    and clinical intervention.
-                </p>
-                <p>
-                    This website documents my research journey and serves as a resource for others
-                    in the G6PD community. I believe that open science and collaboration are key
-                    to accelerating breakthroughs in rare disease research.
-                </p>
+                <div class="section-with-photo">
+                    <img src="IMG_0335.jpg" alt="Luke Chen - Research" class="section-photo">
+                    <div class="section-text">
+                        <p>
+                            My approach combines computational biology with emerging gene editing technologies.
+                            By studying G6PD protein structures through AlphaFold and exploring CRISPR-Cas9
+                            therapeutic strategies, I'm working to bridge the gap between structural biology
+                            and clinical intervention.
+                        </p>
+                        <p>
+                            This website documents my research journey and serves as a resource for others
+                            in the G6PD community. I believe that open science and collaboration are key
+                            to accelerating breakthroughs in rare disease research.
+                        </p>
+                    </div>
+                </div>
             </div>
             <!-- Credentials -->
             <div class="story-card fade-in">
@@ -294,7 +335,7 @@
                 <div class="timeline" style="margin-top: 1.5rem;">
                     <div class="timeline-item">
                         <div class="timeline-dot"></div>
-                        <div class="timeline-date">2024</div>
+                        <div class="timeline-date">2025</div>
                         <div class="timeline-title">Launched G6PD.ai</div>
                         <div class="timeline-description">
                             Created the world's first AI-powered safety checker for G6PD patients,
@@ -303,7 +344,7 @@
                     </div>
                     <div class="timeline-item">
                         <div class="timeline-dot"></div>
-                        <div class="timeline-date">2024</div>
+                        <div class="timeline-date">2025</div>
                         <div class="timeline-title">AlphaFold Structure Analysis</div>
                         <div class="timeline-description">
                             Began systematic analysis of G6PD protein structure using AlphaFold
@@ -322,10 +363,20 @@
                     <div class="timeline-item">
                         <div class="timeline-dot"></div>
                         <div class="timeline-date">2025</div>
-                        <div class="timeline-title">ML Drug Discovery Pipeline</div>
+                        <div class="timeline-title">Variant Database</div>
                         <div class="timeline-description">
-                            Developing machine learning models to identify potential therapeutic
-                            compounds that could stabilize mutant G6PD enzymes.
+                            Built a comprehensive database cataloging 217+ known G6PD mutations
+                            with WHO classifications, structural locations, and clinical severity data.
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">2025</div>
+                        <div class="timeline-title">CRISPR Therapeutics</div>
+                        <div class="timeline-description">
+                            Exploring CRISPR-Cas9 and base editing strategies to correct G6PD
+                            mutations in hematopoietic stem cells, inspired by the FDA-approved
+                            Casgevy therapy for sickle cell disease.
                         </div>
                     </div>
                     <div class="timeline-item">
